@@ -77,8 +77,6 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
   const currentImage = images[currentIndex];
   if (!currentImage) return null;
   
-  console.log('Rendering modal with image:', currentImage);
-  
   return (
     <div 
       className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"

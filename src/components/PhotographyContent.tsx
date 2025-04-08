@@ -37,11 +37,6 @@ export default function PhotographyContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   
-  // Add effect to log modal state changes
-  useEffect(() => {
-    console.log('Modal state changed:', { isOpen: isModalOpen, activeIndex: activeImageIndex });
-  }, [isModalOpen, activeImageIndex]);
-  
   // Fetch collections
   useEffect(() => {
     async function fetchCollections() {
@@ -128,21 +123,7 @@ export default function PhotographyContent() {
     <>
       {/* Collection Side Tabs */}
       <div className="collection-tabs">
-        {/* Debug button */}
-        <button
-          onClick={() => {
-            console.log('Debug button clicked');
-            console.log('Collection images:', collectionImages);
-            if (collectionImages.length > 0) {
-              openImageModal(0);
-            } else {
-              console.log('No images to display');
-            }
-          }}
-          className="absolute top-0 right-0 bg-red-500 text-white p-2 text-xs z-50"
-        >
-          Debug Modal
-        </button>
+        {/* Debug button removed */}
         
         {loadingCollections ? (
           <div className="py-2 px-4">
