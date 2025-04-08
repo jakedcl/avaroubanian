@@ -157,6 +157,11 @@
   margin-bottom: -1px;
 }
 
+/* When modal is open, ensure main tabs don't interfere */
+.modal-open .main-tabs-container {
+  z-index: 10; /* Lower z-index when modal is open */
+}
+
 .main-tab {
   position: relative;
   display: flex;
@@ -330,6 +335,7 @@
   box-shadow: none;
   overflow-x: hidden; /* Prevent horizontal overflow */
   box-sizing: border-box; /* Include padding in width calculation */
+  position: relative; /* Needed for absolute positioning of loading overlay */
 }
 
 .folder-content h2 {
@@ -356,28 +362,52 @@
 
 /* Portfolio loading state */
 .folder-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 300px;
-  font-family: var(--font-inter);
-  font-size: 1rem;
-  color: #000;
-  background-color: #f5f5f5;
-  border-radius: 0 0 10px 10px;
-  border-top: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
+  background-color: rgba(245, 232, 201, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+  border-radius: 0 0 4px 4px;
 }
 
+/* Loading spinner animation */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #333;
+  border-right-color: #333;
+  animation: spinner 0.8s linear infinite;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Smaller spinner for collection tabs */
+.collection-loading-spinner {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+/* Shimmer effect on top of the loading container */
 .folder-loading::after {
   content: "";
   position: absolute;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #f5f5f5, #ddd, #f5f5f5);
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
   animation: loading-shimmer 1.5s infinite;
   top: 0;
 }
@@ -397,10 +427,11 @@
     --container-padding: 1rem;
   }
   
-  /* Reduce padding for site container on mobile */
+  /* Ensure consistent padding for site container on mobile */
   .site-container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+    max-width: 100%; /* Ensure full width on mobile */
   }
   
   /* Portfolio specific mobile adjustments */
@@ -460,6 +491,10 @@
 
 /* More specific small mobile adjustments */
 @media (max-width: 480px) {
+  :root {
+    --container-padding: 0.75rem; /* Slightly smaller padding for very small screens */
+  }
+  
   .main-tabs-container {
     height: 38px; /* Slightly smaller height */
     margin-bottom: 0; /* Adjusted for mobile */
@@ -663,17 +698,16 @@
 @media (max-width: 767px) {
   .bio-section {
     padding-top: 1rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
     padding-bottom: 2rem;
     min-height: 40vh;
     width: 100%; /* Ensure full width */
+    /* Remove left and right padding to avoid double-padding with site-container */
   }
   
   .bio-content {
     max-width: 100%;
-    padding-left: 0; /* Remove any default padding */
-    padding-right: 0; /* Remove any default padding */
+    /* Ensure bio content is centered */
+    margin: 0 auto;
   }
   
   .bio-content h1 {
@@ -690,7 +724,7 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 1000; /* Higher z-index but still below the image modal */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -746,3 +780,8 @@
 .contact-text-link:hover {
   opacity: 0.8;
 }
+
+/* 
+ * The modal has z-index: 2147483647 (max value) 
+ * We ensure it's on top of everything else
+ */

@@ -69,7 +69,7 @@ export default function AnimatedBio({ bioData }: { bioData: BioData }) {
   }, [typingComplete]);
 
   return (
-    <div className="bio-content w-full">
+    <div className="bio-content w-full mx-auto">
       {/* Title with typing animation */}
       {bioData?.title && (
         <h1 className="relative">
@@ -87,7 +87,7 @@ export default function AnimatedBio({ bioData }: { bioData: BioData }) {
       {/* Content with fade-in animation */}
       {bioData?.content && (
         <motion.div 
-          className="prose prose-lg text-white"
+          className="prose prose-lg text-white mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: showContent ? 1 : 0 }}
           transition={{ duration: 0.8 }}

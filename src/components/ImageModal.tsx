@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { urlForImage } from '@/lib/sanity';
 
@@ -32,57 +32,44 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
     } else {
       document.body.style.overflow = 'auto';
+      document.body.classList.remove('modal-open');
     }
     
     return () => {
       document.body.style.overflow = 'auto';
+      document.body.classList.remove('modal-open');
     };
   }, [isOpen]);
   
-  // Navigation functions using useCallback for better performance
-  const navigate = useCallback((direction: 'prev' | 'next') => {
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+      
+      if (e.key === 'ArrowLeft') {
+        navigate('prev');
+      } else if (e.key === 'ArrowRight') {
+        navigate('next');
+      } else if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, currentIndex, images?.length, onClose]);
+  
+  // Navigation function
+  const navigate = (direction: 'prev' | 'next') => {
     if (!images || images.length === 0) return;
     
     if (direction === 'prev') {
       setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     } else {
       setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    }
-  }, [images]);
-  
-  const handlePrevious = useCallback(() => navigate('prev'), [navigate]);
-  const handleNext = useCallback(() => navigate('next'), [navigate]);
-  
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (!isOpen) return;
-    
-    switch (e.key) {
-      case 'ArrowLeft':
-        handlePrevious();
-        break;
-      case 'ArrowRight':
-        handleNext();
-        break;
-      case 'Escape':
-        onClose();
-        break;
-      default:
-        break;
-    }
-  }, [isOpen, handlePrevious, handleNext, onClose]);
-  
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
-  
-  // Handle overlay click to close
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
     }
   };
   
@@ -93,22 +80,114 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
   const currentImage = images[currentIndex];
   if (!currentImage) return null;
   
+  // Inline styles to ensure maximum z-index and correct positioning
+  const modalStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    backdropFilter: 'blur(5px)',
+    zIndex: 2147483647, // Maximum possible z-index value to ensure modal is above everything
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0',
+    margin: '0',
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+  } as React.CSSProperties;
+  
+  const containerStyle = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    maxWidth: '1200px',
+    margin: '0 auto',
+  } as React.CSSProperties;
+  
+  const imageContainerStyle = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxHeight: '80vh',
+    maxWidth: '90vw',
+  } as React.CSSProperties;
+  
+  const navButtonStyleLeft = {
+    position: 'absolute',
+    left: '20px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    zIndex: 2147483647,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white',
+    borderRadius: '50%',
+    width: '50px',
+    height: '50px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    border: 'none',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+  } as React.CSSProperties;
+  
+  const navButtonStyleRight = {
+    ...navButtonStyleLeft,
+    left: 'auto',
+    right: '20px',
+  } as React.CSSProperties;
+  
+  const closeButtonStyle = {
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
+    zIndex: 2147483647,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white',
+    borderRadius: '50%',
+    width: '40px',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    border: 'none',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+  } as React.CSSProperties;
+  
+  const imageCounterStyle = {
+    position: 'absolute',
+    bottom: '20px',
+    left: '0',
+    right: '0',
+    textAlign: 'center',
+    color: 'white',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: '8px 0',
+    zIndex: 2147483647,
+    fontWeight: '500',
+    fontSize: '16px',
+  } as React.CSSProperties;
+  
   return (
     <div 
-      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ease-in-out backdrop-blur-sm"
-      onClick={handleOverlayClick}
-      style={{ 
-        opacity: isOpen ? 1 : 0,
-        visibility: isOpen ? 'visible' : 'hidden'
-      }}
+      style={modalStyle}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
     >
-      <div
-        className="relative w-full h-full flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div style={containerStyle} onClick={(e) => e.stopPropagation()}>
         {/* Close button */}
         <button 
-          className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/50"
+          style={closeButtonStyle}
           onClick={onClose}
           aria-label="Close modal"
         >
@@ -118,35 +197,36 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
           </svg>
         </button>
         
-        {/* Navigation buttons */}
+        {/* Left navigation button */}
         <button
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/50"
+          style={navButtonStyleLeft}
           onClick={(e) => {
             e.stopPropagation();
-            handlePrevious();
+            navigate('prev');
           }}
           aria-label="Previous image"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
         
+        {/* Right navigation button */}
         <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/50"
+          style={navButtonStyleRight}
           onClick={(e) => {
             e.stopPropagation();
-            handleNext();
+            navigate('next');
           }}
           aria-label="Next image"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </button>
         
-        {/* Image with transition */}
-        <div className="relative max-h-[90vh] max-w-[90vw] transition-transform duration-300">
+        {/* Image */}
+        <div style={imageContainerStyle}>
           <Image
             src={urlForImage(currentImage)
               .width(1800)
@@ -154,14 +234,22 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
             alt=""
             width={1800}
             height={1200}
-            className="max-h-[90vh] w-auto h-auto object-contain"
+            style={{
+              maxHeight: '80vh',
+              maxWidth: '90vw',
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'contain',
+              boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
+            }}
             priority
             unoptimized={false}
+            sizes="(max-width: 768px) 95vw, 90vw"
           />
         </div>
         
         {/* Image counter */}
-        <div className="absolute bottom-4 left-0 right-0 text-center text-white bg-black/30 py-1 text-sm">
+        <div style={imageCounterStyle}>
           {currentIndex + 1} / {images.length}
         </div>
       </div>
