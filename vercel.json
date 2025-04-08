@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "rewrites": [
+    { "source": "/studio/(.*)", "destination": "/studio/index.html" }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SANITY_PROJECT_ID": "z85vvbbq",
+    "NEXT_PUBLIC_SANITY_DATASET": "production",
+    "NEXT_PUBLIC_SANITY_API_VERSION": "2023-05-03"
+  }
+} 
