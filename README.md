@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ava Roubanian Portfolio
 
-## Getting Started
+A portfolio website for artist Ava Roubanian, showcasing her artwork, photography, and music projects.
 
-First, run the development server:
+## Features
+
+- **Responsive Design**: Works on mobile, tablet, and desktop
+- **Visual Gallery**: Display artwork and photography with filtering options
+- **Audio Player**: Listen to music projects directly on the site
+- **Content Management**: Powered by Sanity CMS for easy content updates
+
+## Tech Stack
+
+- **Frontend**: Next.js, TypeScript, Tailwind CSS
+- **CMS**: Sanity.io
+- **Hosting**: Vercel
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Setup
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Sanity Studio
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The content management system is powered by Sanity. To run the Sanity Studio:
 
-## Learn More
+```bash
+cd sanity
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Then open [http://localhost:3333](http://localhost:3333) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Frontend (Next.js)
 
-## Deploy on Vercel
+The easiest way to deploy the Next.js frontend is through Vercel:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to a Git repository (GitHub, GitLab, etc.)
+2. Connect your repository in the Vercel dashboard
+3. Vercel will automatically deploy the site
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Sanity Studio
+
+To deploy Sanity Studio:
+
+```bash
+cd sanity
+npx sanity deploy
+```
+
+## Content Management
+
+After deployment, you can manage content by:
+
+1. Logging into the Sanity Studio
+2. Adding, editing, or removing content
+3. Changes will automatically reflect on the website
+
+## License
+
+This project is private and not licensed for public use.
