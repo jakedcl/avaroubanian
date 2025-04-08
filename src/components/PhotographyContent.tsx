@@ -108,14 +108,12 @@ export default function PhotographyContent() {
   
   // Open image modal with the clicked image
   const openImageModal = (index: number) => {
-    console.log('OPENING MODAL with image index:', index);
     setActiveImageIndex(index);
     setIsModalOpen(true);
   };
   
   // Close image modal
   const closeImageModal = () => {
-    console.log('CLOSING MODAL');
     setIsModalOpen(false);
   };
   
