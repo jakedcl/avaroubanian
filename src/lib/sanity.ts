@@ -38,11 +38,13 @@ export function urlForImage(source: SanityImageSource | string) {
 
 // Fetch Bio Information
 export async function getBio() {
+  // Add timestamp to prevent caching
+  const timestamp = new Date().getTime();
   return client.fetch(`*[_type == "bio"][0]{
     title,
     content,
     images
-  }`);
+  }`, { timestamp }); // Pass timestamp as param to ensure fresh data
 }
 
 // Fetch all Photography collections

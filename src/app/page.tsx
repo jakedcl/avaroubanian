@@ -3,9 +3,16 @@ import AnimatedBio from '@/components/AnimatedBio';
 import PortfolioSection from '@/components/PortfolioSection';
 import { Suspense } from 'react';
 
+// Disable caching for this route
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
-  // Fetch bio data from Sanity
+  // Fetch bio data from Sanity with cache busting
   const bioData = await getBio();
+  
+  // Log the bio data for debugging
+  console.log('Fetched bio data:', bioData);
   
   return (
     <main className="flex flex-col items-center justify-between w-full">
