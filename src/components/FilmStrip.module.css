@@ -1,0 +1,299 @@
+/* Film strip: scratch texture = screen on #000 (old site); cells stay transparent so grain isn’t painted over */
+
+/* Outer shell: shadow isn’t clipped by .viewport overflow; frame cell width unchanged */
+.filmstripShell {
+  width: 100%;
+  max-width: none;
+  overflow: visible;
+  /* Physical strip: soft lift + contact shadow + hair highlight on top edge */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.65),
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 20px 48px -12px rgba(0, 0, 0, 0.45);
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  /* Transparent: no extra maroon band around the black track (holes use their own fill) */
+  background: transparent;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+.filmTrack {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  will-change: transform;
+}
+
+/*
+ * film-scratches.jpg: dark base + light dust/scratches — tile X like real stock, then screen-blend on black.
+ * Must sit UNDER labels/photos (z-index), with NO opaque #000 on child cells or the texture disappears.
+ */
+.scratchBand {
+  position: relative;
+  isolation: isolate;
+  background-color: #000;
+}
+
+.scratchBand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/film-scratches.jpg');
+  background-repeat: repeat-x;
+  background-position: 0 50%;
+  background-size: auto 100%;
+  min-height: 100%;
+  /* Punch up grain/scratches before screen-blend so it reads like real stock */
+  filter: contrast(1.65) brightness(0.88) saturate(0.92);
+  mix-blend-mode: screen;
+  opacity: 0.96;
+}
+
+/* 1. Kodak row — above top perforations (frame width / image size unchanged) */
+.kodakRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.kodakCell {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 4px 4px;
+  /* transparent so .scratchBand::before shows through */
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kodakLabel {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 8px;
+  letter-spacing: 0.02em;
+  color: #d4af37;
+  line-height: 1.15;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  opacity: 0.95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  /* Slight right nudge so it doesn’t sit dead-center over the frame */
+  transform: translateX(6px);
+}
+
+/* 2 & 4. Sprocket holes — taller band so perforations breathe */
+.holesRow {
+  height: 18px;
+  width: 100%;
+  flex-shrink: 0;
+  pointer-events: none;
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-background);
+  background-image:
+    linear-gradient(#000000, #000000),
+    linear-gradient(#000000, #000000),
+    repeating-linear-gradient(
+      90deg,
+      #000000 0px,
+      #000000 6px,
+      transparent 6px,
+      transparent 11px,
+      #000000 11px,
+      #000000 17px
+    );
+  background-size:
+    100% 3px,
+    100% 3px,
+    17px 12px;
+  background-position:
+    0 0,
+    0 100%,
+    0 3px;
+  background-repeat: repeat-x, repeat-x, repeat-x;
+}
+
+.stripInner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+/* 3. Frame band — same scratch treatment; slight inset from perforations */
+.stripInnerFilm {
+  position: relative;
+  z-index: 0;
+  background-color: #000;
+  isolation: isolate;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.stripInnerFilm::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/film-scratches.jpg');
+  background-repeat: repeat-x;
+  background-position: 0 50%;
+  background-size: auto 100%;
+  min-height: 100%;
+  filter: contrast(1.65) brightness(0.88) saturate(0.92);
+  mix-blend-mode: screen;
+  opacity: 0.96;
+}
+
+.frameColumn {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding-left: 4px;
+  padding-right: 4px;
+  background-color: transparent;
+}
+
+.frameWindow {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #0a0a0a;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.frameImage {
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+.frameWindow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* 5. Counters — below bottom perforations */
+.frameNumbersRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.numberCell {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 4px 4px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.frameNumber {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  color: #d4af37;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.frameButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+.frameButton:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+.viewportDesktop {
+  padding: 0;
+  min-height: 0;
+}
+
+.viewportMobile {
+  padding-top: 0;
+  padding-bottom: 0;
+  min-height: 0;
+}
+
+/* Narrow viewports: slightly tighter but same breathing room pattern */
+.viewportMobile .kodakCell {
+  padding: 4px 2px;
+}
+
+.viewportMobile .kodakLabel {
+  font-size: 6px;
+  transform: translateX(4px);
+}
+
+.viewportMobile .holesRow {
+  height: 14px;
+  background-size:
+    100% 2px,
+    100% 2px,
+    17px 10px;
+  background-position:
+    0 0,
+    0 100%,
+    0 2px;
+}
+
+.viewportMobile .stripInnerFilm {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.viewportMobile .frameColumn {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.viewportMobile .numberCell {
+  padding: 4px 2px;
+}
+
+.viewportMobile .frameNumber {
+  font-size: 7px;
+  line-height: 1.15;
+}

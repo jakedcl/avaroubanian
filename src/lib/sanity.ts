@@ -2,7 +2,7 @@ import { createClient } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
 
 // Define a type for Sanity image reference
-interface SanityImageSource {
+export interface SanityImageSource {
   _type: string;
   asset: {
     _ref: string;
@@ -45,6 +45,25 @@ export async function getBio() {
     content,
     images
   }`, { timestamp }); // Pass timestamp as param to ensure fresh data
+}
+
+/** Flatten all photography + artwork images for the home filmstrip (Fisher–Yates shuffle). */
+export async function getFilmstripImages(): Promise<SanityImageSource[]> {
+  const rows = await client.fetch<
+    { images?: SanityImageSource[] }[]
+  >(`*[_type in ["photography", "visual"]]{ images }`);
+
+  const flat: SanityImageSource[] = [];
+  for (const row of rows) {
+    if (row.images?.length) flat.push(...row.images);
+  }
+
+  for (let i = flat.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [flat[i], flat[j]] = [flat[j], flat[i]];
+  }
+
+  return flat;
 }
 
 // Fetch all Photography collections
