@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import styles from './FilmStrip.module.css';
 import { urlForImage } from '@/lib/sanity';
 import type { SanityImageSource } from '@/lib/sanity';
 
 const SCROLL_SPEED = 25;
-const REPEATS = 5;
+const REPEATS = 2;
 const FRAME_WIDTH_DESKTOP = 125;
 /** Wider than old 85px so 4:3 frames keep a better ratio vs labels/holes on small screens */
 const FRAME_WIDTH_MOBILE = 102;
@@ -18,10 +18,6 @@ export interface FilmStripProps {
 
 export default function FilmStrip({ images }: FilmStripProps) {
   const [frameWidth, setFrameWidth] = useState(FRAME_WIDTH_DESKTOP);
-  /** Entire film assembly — translates as one unit */
-  const filmTrackRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
-  const totalOffsetRef = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)');
@@ -32,46 +28,11 @@ export default function FilmStrip({ images }: FilmStripProps) {
     return () => mq.removeEventListener('change', apply);
   }, []);
 
-  const wrapOffset = useCallback(() => {
-    if (!images.length) return;
-    const cycle = frameWidth * images.length;
-    while (totalOffsetRef.current >= cycle) totalOffsetRef.current -= cycle;
-    while (totalOffsetRef.current < 0) totalOffsetRef.current += cycle;
-  }, [frameWidth, images.length]);
-
-  const updateTransform = useCallback(() => {
-    const el = filmTrackRef.current;
-    if (!el) return;
-    el.style.transform = `translate3d(-${totalOffsetRef.current}px,0,0)`;
-  }, []);
-
-  useEffect(() => {
-    if (!images.length) return;
-
-    let last = performance.now();
-
-    const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-
-      totalOffsetRef.current += SCROLL_SPEED * dt;
-      wrapOffset();
-      updateTransform();
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [images.length, wrapOffset, updateTransform]);
-
-  useEffect(() => {
-    totalOffsetRef.current = 0;
-    updateTransform();
-  }, [frameWidth, images.length, updateTransform]);
-
   if (!images.length) return null;
 
+  const cycleWidthPx = frameWidth * images.length;
   const trackWidthPx = REPEATS * images.length * frameWidth;
+  const durationSeconds = cycleWidthPx / SCROLL_SPEED;
 
   const kodakCells: ReactNode[] = [];
   const frameCells: ReactNode[] = [];
@@ -143,11 +104,11 @@ export default function FilmStrip({ images }: FilmStripProps) {
         role="presentation"
       >
         <div
-          ref={filmTrackRef}
-          className={styles.filmTrack}
+          className={`${styles.filmTrack} ${styles.filmTrackAutoScroll}`}
           style={{
             width: trackWidthPx,
-            transform: 'translate3d(0,0,0)',
+            ['--film-cycle-width' as string]: `${cycleWidthPx}px`,
+            ['--film-duration' as string]: `${durationSeconds}s`,
           }}
         >
           <div className={`${styles.kodakRow} ${styles.scratchBand}`}>

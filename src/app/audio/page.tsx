@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { urlForImage } from '@/lib/sanity';
 
 interface AudioCategory {
@@ -273,7 +274,7 @@ export default function AudioPage() {
                 <div className="flex flex-col md:flex-row gap-4 items-center">
                   {currentTrack.coverImage && (
                     <div className="w-32 h-32 relative">
-                      <img 
+                      <Image
                         src={urlForImage({
                           ...currentTrack.coverImage,
                           _type: 'image',
@@ -283,6 +284,9 @@ export default function AudioPage() {
                           }
                         }).width(200).height(200).url()}
                         alt={currentTrack.title}
+                        width={200}
+                        height={200}
+                        sizes="128px"
                         className="w-full h-full object-cover rounded-md"
                       />
                     </div>
@@ -339,7 +343,7 @@ export default function AudioPage() {
                     <div className="flex items-center gap-3">
                       {track.coverImage ? (
                         <div className="w-16 h-16 relative flex-shrink-0">
-                          <img
+                          <Image
                             src={urlForImage({
                               ...track.coverImage,
                               _type: 'image',
@@ -349,6 +353,9 @@ export default function AudioPage() {
                               }
                             }).width(100).height(100).url()}
                             alt={track.title}
+                            width={100}
+                            height={100}
+                            sizes="64px"
                             className="w-full h-full object-cover rounded-md"
                           />
                         </div>
