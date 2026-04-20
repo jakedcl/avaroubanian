@@ -109,36 +109,34 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             role="dialog"
             aria-modal="true"
           >
-            {/* Header */}
-            <div className="p-6 border-b border-white/20">
-              <h2 className="text-white text-xl uppercase tracking-wide">
-                GET IN TOUCH
+            <div className="modal-header">
+              <h2 className="modal-title">
+                Get in Touch
               </h2>
             </div>
             
-            {/* Body */}
-            <div className="p-6">
+            <div className="modal-body">
               {formStatus.submitted && formStatus.success ? (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-center py-8"
+                  className="modal-success"
                 >
-                  <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="modal-success-icon">
+                    <svg className="modal-success-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M5 13L9 17L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <p className="text-white text-lg mb-2">
+                  <p className="modal-success-text">
                     {formStatus.message}
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
+                <form onSubmit={handleSubmit} className="modal-form">
+                  <div className="modal-field">
                     <label 
                       htmlFor="name" 
-                      className="block text-white/90 uppercase text-sm mb-2"
+                      className="modal-label"
                     >
                       NAME
                     </label>
@@ -153,10 +151,10 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     />
                   </div>
                   
-                  <div>
+                  <div className="modal-field">
                     <label 
                       htmlFor="email" 
-                      className="block text-white/90 uppercase text-sm mb-2"
+                      className="modal-label"
                     >
                       EMAIL
                     </label>
@@ -171,10 +169,10 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     />
                   </div>
                   
-                  <div>
+                  <div className="modal-field">
                     <label 
                       htmlFor="message" 
-                      className="block text-white/90 uppercase text-sm mb-2"
+                      className="modal-label"
                     >
                       MESSAGE
                     </label>
@@ -185,13 +183,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       onChange={handleChange}
                       required
                       rows={5}
-                      className="modal-input resize-none"
+                      className="modal-input modal-textarea"
                     />
                   </div>
                   
                   <button
                     type="submit"
-                    className="w-full py-3 bg-white text-background font-medium hover:bg-white/90 transition-colors uppercase rounded-md"
+                    className="modal-submit"
                   >
                     SEND MESSAGE
                   </button>
@@ -199,13 +197,12 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               )}
             </div>
             
-            {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 text-white/80 hover:text-white"
+              className="modal-close"
               aria-label="Close modal"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>

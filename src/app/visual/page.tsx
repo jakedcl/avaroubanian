@@ -54,43 +54,28 @@ export default function VisualPage() {
     async function fetchCollections() {
       try {
         setLoadingCollections(true);
-        
-        console.log(`Fetching collections for tab: ${activeTab}`);
-        
-        // Fetch collections for the active tab
+
         const response = await fetch(`/api/visual?type=${activeTab}`);
         const data = await response.json();
-        
-        console.log(`Collections data received:`, data);
-        
+
         if (Array.isArray(data)) {
           if (activeTab === 'photography') {
-            console.log(`Setting ${data.length} photography collections`);
-            // Sort collections by order if available
             const sortedCollections = [...data].sort((a, b) => 
               (a.order || 100) - (b.order || 100)
             );
             setPhotoCollections(sortedCollections);
-            // Set the first collection as active if available and no active collection
-            if (sortedCollections.length > 0 && !activeCollection) {
-              console.log(`Setting active collection to: ${sortedCollections[0]._id}`);
+            if (sortedCollections.length > 0) {
               setActiveCollection(sortedCollections[0]._id);
             }
           } else {
-            console.log(`Setting ${data.length} visual collections`);
-            // Sort collections by order if available
             const sortedCollections = [...data].sort((a, b) => 
               (a.order || 100) - (b.order || 100)
             );
             setVisualCollections(sortedCollections);
-            // Set the first collection as active if available and no active collection
-            if (sortedCollections.length > 0 && !activeCollection) {
-              console.log(`Setting active collection to: ${sortedCollections[0]._id}`);
+            if (sortedCollections.length > 0) {
               setActiveCollection(sortedCollections[0]._id);
             }
           }
-        } else {
-          console.log(`Received non-array data:`, data);
         }
       } catch (error) {
         console.error(`Error fetching ${activeTab} collections:`, error);
@@ -109,17 +94,11 @@ export default function VisualPage() {
       
       try {
         setLoadingImages(true);
-        
-        console.log(`Fetching images for collection: ${activeCollection} (${activeTab})`);
-        
-        // Fetch the active collection with its images
+
         const response = await fetch(`/api/visual?type=${activeTab}&collectionId=${activeCollection}`);
         const data = await response.json();
-        
-        console.log(`Collection images data:`, data);
-        
+
         if (data && data.images) {
-          // Add required _type property for sanity urlForImage
           const imagesWithType = data.images.map((img: CollectionImage) => ({
             ...img,
             _type: 'image',
@@ -128,10 +107,8 @@ export default function VisualPage() {
               _type: 'reference'
             }
           }));
-          console.log(`Setting ${imagesWithType.length} images for collection`);
           setCollectionImages(imagesWithType);
         } else {
-          console.log(`No images found in collection data`);
           setCollectionImages([]);
         }
       } catch (error) {

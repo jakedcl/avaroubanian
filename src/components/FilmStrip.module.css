@@ -30,6 +30,24 @@
   flex-wrap: nowrap;
   flex-shrink: 0;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.filmTrackAutoScroll {
+  animation-name: filmTrackScroll;
+  animation-duration: var(--film-duration, 24s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes filmTrackScroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(-1 * var(--film-cycle-width, 0px)), 0, 0);
+  }
 }
 
 /*
@@ -277,4 +295,13 @@
 .viewportMobile .frameNumber {
   font-size: 7px;
   line-height: 1.15;
+}
+
+/* iOS GPUs can stutter with heavy blend+filter on moving layers. */
+@media (max-width: 767px) {
+  .scratchBand::before,
+  .stripInnerFilm::before {
+    filter: contrast(1.2) brightness(0.92) saturate(0.95);
+    opacity: 0.86;
+  }
 }

@@ -63,8 +63,10 @@ export default function AudioContent() {
           setCollections(sortedCollections);
           
           // Set the first collection as active if available
-          if (sortedCollections.length > 0 && !activeCollection) {
+          if (sortedCollections.length > 0) {
             setActiveCollection(sortedCollections[0]._id);
+          } else {
+            setActiveCollection(null);
           }
         }
       } catch (error) {

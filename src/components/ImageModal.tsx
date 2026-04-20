@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, type CSSProperties } from 'react';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 import { urlForImage } from '@/lib/sanity';
 
 interface SanityImage {
@@ -22,28 +23,79 @@ interface ImageModalProps {
 
 export default function ImageModal({ images, initialIndex, isOpen, onClose }: ImageModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [mounted, setMounted] = useState(false);
   
   // Update current index when initialIndex changes
   useEffect(() => {
     setCurrentIndex(initialIndex);
   }, [initialIndex]);
-  
-  // Lock body scroll when modal is open
+
   useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+  
+  // Lock page scroll (iOS-safe) when modal is open
+  useEffect(() => {
+    if (!mounted) return;
+
+    const scrollY = window.scrollY;
+    const { body, documentElement } = document;
+
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.classList.add('modal-open');
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollY}px`;
+      body.style.left = '0';
+      body.style.right = '0';
+      body.style.width = '100%';
+      body.style.overflow = 'hidden';
+      body.style.touchAction = 'none';
+      documentElement.style.overflow = 'hidden';
+      body.classList.add('modal-open');
     } else {
-      document.body.style.overflow = 'auto';
-      document.body.classList.remove('modal-open');
+      const top = body.style.top;
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      body.style.overflow = '';
+      body.style.touchAction = '';
+      documentElement.style.overflow = '';
+      body.classList.remove('modal-open');
+      if (top) {
+        window.scrollTo(0, Math.abs(parseInt(top, 10)));
+      }
     }
     
     return () => {
-      document.body.style.overflow = 'auto';
-      document.body.classList.remove('modal-open');
+      const top = body.style.top;
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      body.style.overflow = '';
+      body.style.touchAction = '';
+      documentElement.style.overflow = '';
+      body.classList.remove('modal-open');
+      if (top) {
+        window.scrollTo(0, Math.abs(parseInt(top, 10)));
+      }
     };
-  }, [isOpen]);
+  }, [isOpen, mounted]);
   
+  // Navigation function
+  const navigate = useCallback((direction: 'prev' | 'next') => {
+    if (!images || images.length === 0) return;
+    
+    if (direction === 'prev') {
+      setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    } else {
+      setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    }
+  }, [images]);
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,18 +112,7 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentIndex, images?.length, onClose]);
-  
-  // Navigation function
-  const navigate = (direction: 'prev' | 'next') => {
-    if (!images || images.length === 0) return;
-    
-    if (direction === 'prev') {
-      setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    } else {
-      setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    }
-  };
+  }, [isOpen, navigate, onClose]);
   
   // If modal is closed or no images, don't render anything
   if (!isOpen || !images || images.length === 0) return null;
@@ -81,7 +122,7 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
   if (!currentImage) return null;
   
   // Inline styles to ensure maximum z-index and correct positioning
-  const modalStyle = {
+  const modalStyle: CSSProperties = {
     position: 'fixed',
     top: 0,
     left: 0,
@@ -93,36 +134,38 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '0',
+    padding: 'max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))',
     margin: '0',
     width: '100vw',
-    height: '100vh',
+    height: '100dvh',
     overflow: 'hidden',
-  } as React.CSSProperties;
+    overscrollBehavior: 'contain',
+    WebkitOverflowScrolling: 'touch',
+  };
   
-  const containerStyle = {
+  const containerStyle: CSSProperties = {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
     height: '100%',
-    maxWidth: '1200px',
+    maxWidth: 'min(1200px, 96vw)',
     margin: '0 auto',
-  } as React.CSSProperties;
+  };
   
-  const imageContainerStyle = {
+  const imageContainerStyle: CSSProperties = {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    maxHeight: '80vh',
-    maxWidth: '90vw',
-  } as React.CSSProperties;
+    maxHeight: '84dvh',
+    maxWidth: '94vw',
+  };
   
-  const navButtonStyleLeft = {
+  const navButtonStyleLeft: CSSProperties = {
     position: 'absolute',
-    left: '20px',
+    left: 'max(12px, env(safe-area-inset-left))',
     top: '50%',
     transform: 'translateY(-50%)',
     zIndex: 2147483647,
@@ -137,35 +180,35 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
     cursor: 'pointer',
     border: 'none',
     boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
-  } as React.CSSProperties;
+  };
   
-  const navButtonStyleRight = {
+  const navButtonStyleRight: CSSProperties = {
     ...navButtonStyleLeft,
     left: 'auto',
-    right: '20px',
-  } as React.CSSProperties;
+    right: 'max(12px, env(safe-area-inset-right))',
+  };
   
-  const closeButtonStyle = {
+  const closeButtonStyle: CSSProperties = {
     position: 'absolute',
-    top: '20px',
-    right: '20px',
+    top: 'max(12px, env(safe-area-inset-top))',
+    right: 'max(12px, env(safe-area-inset-right))',
     zIndex: 2147483647,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.72)',
     color: 'white',
-    borderRadius: '50%',
-    width: '40px',
-    height: '40px',
+    borderRadius: '9999px',
+    width: '48px',
+    height: '48px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    border: 'none',
+    border: '1px solid rgba(255,255,255,0.35)',
     boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
-  } as React.CSSProperties;
+  };
   
-  const imageCounterStyle = {
+  const imageCounterStyle: CSSProperties = {
     position: 'absolute',
-    bottom: '20px',
+    bottom: 'max(12px, env(safe-area-inset-bottom))',
     left: '0',
     right: '0',
     textAlign: 'center',
@@ -175,9 +218,11 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
     zIndex: 2147483647,
     fontWeight: '500',
     fontSize: '16px',
-  } as React.CSSProperties;
-  
-  return (
+  };
+
+  if (!mounted) return null;
+
+  return createPortal(
     <div 
       style={modalStyle}
       onClick={onClose}
@@ -189,9 +234,9 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
         <button 
           style={closeButtonStyle}
           onClick={onClose}
-          aria-label="Close modal"
+          aria-label="Close fullscreen image"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -235,8 +280,8 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
             width={1800}
             height={1200}
             style={{
-              maxHeight: '80vh',
-              maxWidth: '90vw',
+              maxHeight: '84dvh',
+              maxWidth: '94vw',
               width: 'auto',
               height: 'auto',
               objectFit: 'contain',
@@ -253,6 +298,7 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
           {currentIndex + 1} / {images.length}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 } 
