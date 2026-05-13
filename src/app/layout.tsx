@@ -1,16 +1,43 @@
-'use client';
-
-import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
+import { Newsreader } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import SiteShell from '@/components/SiteShell';
 
-// Load Inter from Google Fonts
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
+
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'Ava Roubanian | Artist & Photographer',
+    template: '%s | Ava Roubanian',
+  },
+  description: 'Portfolio of visual and audio works by Ava Roubanian.',
+  keywords: [
+    'artist',
+    'photographer',
+    'musician',
+    'portfolio',
+    'artwork',
+    'photography',
+    'music',
+  ],
+  openGraph: {
+    type: 'website',
+    title: 'Ava Roubanian | Artist, Photographer, Musician',
+    description:
+      'Portfolio of Ava Roubanian, featuring artwork, photography, and music projects.',
+    images: ['/images/og-image.jpg'],
+  },
+};
 
 export default function RootLayout({
   children,
@@ -18,22 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable}`}>
-      <head>
-        <title>Ava Roubanian | Artist & Photographer</title>
-        <meta name="description" content="Portfolio of visual and audio works by Ava Roubanian." />
-        <meta name="keywords" content="artist, photographer, musician, portfolio, artwork, photography, music" />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="Ava Roubanian | Artist, Photographer, Musician" />
-        <meta property="og:description" content="Portfolio of Ava Roubanian, featuring artwork, photography, and music projects." />
-        <meta property="og:image" content="/images/og-image.jpg" />
-      </head>
-      <body className={`${inter.className} bg-background text-white`}>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-        </div>
+    <html lang="en">
+      <body className={`${newsreader.className} min-h-screen bg-white text-neutral-950`}>
+        <Suspense fallback={<div className="min-h-screen bg-white" aria-hidden />}>
+          <SiteShell>{children}</SiteShell>
+        </Suspense>
       </body>
     </html>
   );
