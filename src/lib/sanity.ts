@@ -38,24 +38,34 @@ export function urlForImage(source: SanityImageSource | string) {
 
 // Fetch Bio Information
 export async function getBio() {
-  // Add timestamp to prevent caching
   const timestamp = new Date().getTime();
   return client.fetch(`*[_type == "bio"][0]{
     title,
     content,
+    "contentPlain": coalesce(pt::text(content), ""),
     images
-  }`, { timestamp }); // Pass timestamp as param to ensure fresh data
+  }`, { timestamp });
 }
 
-/** Flatten all photography + artwork images for the home filmstrip (Fisher–Yates shuffle). */
-export async function getFilmstripImages(): Promise<SanityImageSource[]> {
-  const rows = await client.fetch<
-    { images?: SanityImageSource[] }[]
-  >(`*[_type in ["photography", "visual"]]{ images }`);
+/** All images from photography, artwork (visual), and audio track covers — shuffled once. */
+export async function getAllGalleryImages(): Promise<SanityImageSource[]> {
+  const [photoVisual, audioCovers] = await Promise.all([
+    client.fetch<{ images?: SanityImageSource[] }[]>(
+      `*[_type in ["photography", "visual"]]{ images }`,
+    ),
+    client.fetch<{ tracks?: { coverImage?: SanityImageSource }[] }[]>(
+      `*[_type == "audio"]{ tracks[]{ coverImage } }`,
+    ),
+  ]);
 
   const flat: SanityImageSource[] = [];
-  for (const row of rows) {
+  for (const row of photoVisual) {
     if (row.images?.length) flat.push(...row.images);
+  }
+  for (const doc of audioCovers) {
+    for (const t of doc.tracks ?? []) {
+      if (t.coverImage?.asset) flat.push(t.coverImage);
+    }
   }
 
   for (let i = flat.length - 1; i > 0; i--) {
@@ -66,6 +76,9 @@ export async function getFilmstripImages(): Promise<SanityImageSource[]> {
   return flat;
 }
 
+/** @deprecated Use {@link getAllGalleryImages} */
+export const getFilmstripImages = getAllGalleryImages;
+
 // Fetch all Photography collections
 export async function getPhotographyCollections() {
   return client.fetch(`*[_type == "photography"] | order(order asc, title asc) {
@@ -74,7 +87,8 @@ export async function getPhotographyCollections() {
     slug,
     description,
     order,
-    "imageCount": count(images)
+    "imageCount": count(images),
+    "previewImage": images[0]
   }`);
 }
 
@@ -100,7 +114,8 @@ export async function getVisualCollections() {
     slug,
     description,
     order,
-    "imageCount": count(images)
+    "imageCount": count(images),
+    "previewImage": images[0]
   }`);
 }
 
@@ -142,7 +157,8 @@ export async function getAudioCollections() {
     slug,
     description,
     order,
-    "mediaCount": count(tracks)
+    "mediaCount": count(tracks),
+    "previewImage": tracks[0].coverImage
   }`);
 }
 
