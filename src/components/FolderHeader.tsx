@@ -2,6 +2,8 @@
 
 import {
   SECTION_POSITION,
+  TAB_LEFT_PCT,
+  TAB_W_PCT,
   inactiveTabPath,
   activeHeaderPath,
   FOLDER_VIEWBOX,
@@ -14,13 +16,6 @@ const TABS: { section: Section; label: string; position: TabPosition }[] = [
   { section: 'artwork', label: 'Artwork', position: 'center' },
   { section: 'audio', label: 'Audio', position: 'right' },
 ];
-
-const TAB_W_PCT = 30;
-const TAB_LEFT_PCT: Record<TabPosition, number> = {
-  left: 2.2,
-  center: 35,
-  right: 67.8,
-};
 
 interface FolderHeaderProps {
   activeSection: Section;
@@ -45,23 +40,19 @@ export default function FolderHeader({ activeSection, onTabChange }: FolderHeade
           <pattern
             id="manillaPattern"
             patternUnits="userSpaceOnUse"
-            width="360"
-            height="360"
+            width="900"
+            height="675"
           >
+            <rect width="900" height="675" fill="#e8d5a3" />
             <image
               href="/manilla_texture.jpg"
-              width="360"
-              height="360"
+              width="900"
+              height="675"
               preserveAspectRatio="xMidYMid slice"
             />
           </pattern>
-          <linearGradient id="manillaShade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
-            <stop offset="100%" stopColor="rgba(0,0,0,0.06)" />
-          </linearGradient>
         </defs>
 
-        {/* Inactive tabs peeking from behind */}
         {inactivePositions.map((pos) => (
           <path
             key={pos}
@@ -71,31 +62,13 @@ export default function FolderHeader({ activeSection, onTabChange }: FolderHeade
           />
         ))}
 
-        {/* Active folder header — tab + back panel as one shape */}
         <path
           d={activeHeaderPath(activePosition)}
           fill="url(#manillaPattern)"
           className="folder-tab-active-shape"
         />
-
-        {/* Subtle top highlight */}
-        <path
-          d={activeHeaderPath(activePosition)}
-          fill="url(#manillaShade)"
-          className="folder-tab-highlight"
-        />
-
-        {/* Score / fold line below tab */}
-        <line
-          x1="0"
-          y1={56}
-          x2="1000"
-          y2={56}
-          className="folder-score-line"
-        />
       </svg>
 
-      {/* Click targets */}
       {TABS.map(({ section, label, position }) => (
         <button
           key={section}
