@@ -7,19 +7,20 @@ export const SECTION_POSITION: Record<Section, TabPosition> = {
   audio: 'right',
 };
 
-/** SVG coordinate space */
 const W = 1000;
-const H = 72;
-/** Flat top of the folder body (tab rises above this) */
-const EDGE = 46;
-/** Top of the raised tab */
-const PEAK = 8;
-const TAB_W = 292;
-const MARGIN = 28;
-/** How much the tab top is narrower than the base (each side) */
-const SLOPE = 34;
-/** Corner rounding on tab top */
-const ROUND = 20;
+const H = 80;
+/** Flat top of the folder body */
+const EDGE = 52;
+/** Top of the tab */
+const PEAK = 6;
+/** Tab width — a real 1/3-cut is ~31% of the folder */
+const TAB_W = 320;
+const MARGIN = 32;
+/**
+ * Width of each die-cut ear. Rise is 46; 64px of run makes a
+ * ~45° slope in the middle of the S-curve, like a real 1/3-cut tab.
+ */
+const SHOULDER = 64;
 
 export const TAB_X: Record<TabPosition, number> = {
   left: MARGIN,
@@ -36,60 +37,76 @@ export const TAB_LEFT_PCT: Record<TabPosition, number> = {
 export const TAB_W_PCT = (TAB_W / W) * 100;
 
 /**
- * Rounded trapezoid tab sitting on the folder edge.
- * Path never drops below EDGE — that was causing the V-notches.
+ * One shoulder: smooth step from the flat edge up onto the tab top.
+ * Starts horizontal, ends horizontal — a die-cut ear, not a sharp trapezoid.
+ * All points stay at y <= EDGE so nothing carves into the body.
  */
-function tabBump(tx: number): string {
-  const tr = tx + TAB_W;
-  const topL = tx + SLOPE;
-  const topR = tr - SLOPE;
-
+function leftEar(tx: number): string {
+  const x1 = tx + SHOULDER;
   return [
-    // along the edge to the tab base
     `L ${tx} ${EDGE}`,
-    // left shoulder: rise along the slope, then round into the top
-    `C ${tx + 22} ${EDGE} ${topL - 4} ${PEAK + 26} ${topL} ${PEAK + ROUND}`,
-    `Q ${topL} ${PEAK} ${topL + ROUND} ${PEAK}`,
-    // flat-ish tab top
-    `L ${topR - ROUND} ${PEAK}`,
-    // right shoulder: round off, then descend to the edge
-    `Q ${topR} ${PEAK} ${topR} ${PEAK + ROUND}`,
-    `C ${topR + 4} ${PEAK + 26} ${tr - 22} ${EDGE} ${tr} ${EDGE}`,
+    `C ${tx + 18} ${EDGE}`,
+    `${x1 - 18} ${PEAK}`,
+    `${x1} ${PEAK}`,
   ].join(' ');
 }
 
-/** Inactive tab peeking above the front folder's flat edge */
+function rightEar(tx: number): string {
+  const tr = tx + TAB_W;
+  const x1 = tr - SHOULDER;
+  return [
+    `C ${x1 + 18} ${PEAK}`,
+    `${tr - 18} ${EDGE}`,
+    `${tr} ${EDGE}`,
+  ].join(' ');
+}
+
+function tabTop(tx: number): string {
+  return `L ${tx + TAB_W - SHOULDER} ${PEAK}`;
+}
+
 export function inactiveTabPath(position: TabPosition): string {
   const tx = TAB_X[position];
   const tr = tx + TAB_W;
-  const topL = tx + SLOPE;
-  const topR = tr - SLOPE;
-  const base = EDGE + 2;
-
+  const base = EDGE + 1;
   return [
-    `M ${tx + 8} ${base}`,
-    `C ${tx + 22} ${base} ${topL - 4} ${PEAK + 26} ${topL} ${PEAK + ROUND}`,
-    `Q ${topL} ${PEAK} ${topL + ROUND} ${PEAK}`,
-    `L ${topR - ROUND} ${PEAK}`,
-    `Q ${topR} ${PEAK} ${topR} ${PEAK + ROUND}`,
-    `C ${topR + 4} ${PEAK + 26} ${tr - 22} ${base} ${tr - 8} ${base}`,
+    `M ${tx + 4} ${base}`,
+    `C ${tx + 18} ${base} ${tx + SHOULDER - 18} ${PEAK} ${tx + SHOULDER} ${PEAK}`,
+    `L ${tr - SHOULDER} ${PEAK}`,
+    `C ${tr - SHOULDER + 18} ${PEAK} ${tr - 18} ${base} ${tr - 4} ${base}`,
     'Z',
   ].join(' ');
 }
 
-/** Active folder: flat top edge + one tab bump. One continuous silhouette. */
 export function activeHeaderPath(position: TabPosition): string {
   const tx = TAB_X[position];
-
   return [
     `M 0 ${H}`,
-    `L 0 ${EDGE + 8}`,
-    `Q 0 ${EDGE} 12 ${EDGE}`,
-    tabBump(tx),
-    `L ${W - 12} ${EDGE}`,
-    `Q ${W} ${EDGE} ${W} ${EDGE + 8}`,
+    `L 0 ${EDGE + 6}`,
+    `Q 0 ${EDGE} 10 ${EDGE}`,
+    leftEar(tx),
+    tabTop(tx),
+    rightEar(tx),
+    `L ${W - 10} ${EDGE}`,
+    `Q ${W} ${EDGE} ${W} ${EDGE + 6}`,
     `L ${W} ${H}`,
     'Z',
+  ].join(' ');
+}
+
+/** Score crease, inset just below the cut edge — follows the tab. */
+export function scoreLinePath(position: TabPosition): string {
+  const tx = TAB_X[position];
+  const tr = tx + TAB_W;
+  const e = EDGE + 9;
+  const p = PEAK + 9;
+  return [
+    `M 14 ${e}`,
+    `L ${tx} ${e}`,
+    `C ${tx + 18} ${e} ${tx + SHOULDER - 18} ${p} ${tx + SHOULDER} ${p}`,
+    `L ${tr - SHOULDER} ${p}`,
+    `C ${tr - SHOULDER + 18} ${p} ${tr - 18} ${e} ${tr} ${e}`,
+    `L ${W - 14} ${e}`,
   ].join(' ');
 }
 
