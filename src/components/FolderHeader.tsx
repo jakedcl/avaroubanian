@@ -6,6 +6,7 @@ import {
   TAB_W_PCT,
   inactiveTabPath,
   activeHeaderPath,
+  scoreLinePath,
   FOLDER_VIEWBOX,
   type Section,
   type TabPosition,
@@ -66,6 +67,13 @@ export default function FolderHeader({ activeSection, onTabChange }: FolderHeade
           d={activeHeaderPath(activePosition)}
           fill="url(#manillaPattern)"
           className="folder-tab-active-shape"
+          stroke="rgba(80, 55, 25, 0.18)"
+          strokeWidth="1"
+        />
+
+        <path
+          d={scoreLinePath(activePosition)}
+          className="folder-score-line"
         />
       </svg>
 
