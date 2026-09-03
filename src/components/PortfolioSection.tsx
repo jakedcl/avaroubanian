@@ -35,34 +35,35 @@ export default function PortfolioSection() {
   
   return (
     <div className="portfolio-container">
-      {/* Main Category Tabs */}
-      <div className="main-tabs-container">
-        <div
-          className={`main-tab ${activeSection === 'photography' ? 'active' : ''}`}
-          onClick={() => changeSection('photography')}
-        >
-          <span>Photography</span>
+      <div className="folder-outer">
+        {/* Folder tabs */}
+        <div className="main-tabs-container">
+          <div
+            className={`main-tab ${activeSection === 'photography' ? 'active' : ''}`}
+            onClick={() => changeSection('photography')}
+          >
+            <span>Photography</span>
+          </div>
+          <div
+            className={`main-tab ${activeSection === 'artwork' ? 'active' : ''}`}
+            onClick={() => changeSection('artwork')}
+          >
+            <span>Artwork</span>
+          </div>
+          <div
+            className={`main-tab ${activeSection === 'audio' ? 'active' : ''}`}
+            onClick={() => changeSection('audio')}
+          >
+            <span>Audio</span>
+          </div>
         </div>
-        <div
-          className={`main-tab ${activeSection === 'artwork' ? 'active' : ''}`}
-          onClick={() => changeSection('artwork')}
-        >
-          <span>Artwork</span>
-        </div>
-        <div
-          className={`main-tab ${activeSection === 'audio' ? 'active' : ''}`}
-          onClick={() => changeSection('audio')}
-        >
-          <span>Audio</span>
-        </div>
-      </div>
 
-      {/* Portfolio Folder with Content */}
-      <div className="portfolio-folder">
-        {/* Content based on active section */}
-        {activeSection === 'photography' && <PhotographyContent />}
-        {activeSection === 'artwork' && <ArtworkContent />}
-        {activeSection === 'audio' && <AudioContent />}
+        {/* Folder body */}
+        <div className="portfolio-folder">
+          {activeSection === 'photography' && <PhotographyContent />}
+          {activeSection === 'artwork' && <ArtworkContent />}
+          {activeSection === 'audio' && <AudioContent />}
+        </div>
       </div>
     </div>
   );
