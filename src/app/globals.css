@@ -8,9 +8,21 @@
   --color-text-light: rgba(255, 255, 255, 0.8);
   --container-padding: 1.5rem;
   --container-width: 1280px;
-  /* Manilla folder / tabs — solid fallback if texture fails to load */
-  --manilla-fallback: #f5e8c9;
+
+  /* Manila palette */
+  --manilla-fallback: #e8d5a3;
+  --manilla-light: #f0deb4;
+  --manilla-mid: #dcc88a;
+  --manilla-dark: #c9b070;
+  --manilla-shadow: #a8905a;
   --manilla-texture: url('/manilla_texture.jpg');
+
+  /* Desk surface */
+  --desk-bg: #1a1008;
+
+  /* Folder tab geometry */
+  --tab-height: 38px;
+  --tab-overlap: 14px;
 }
 
 @layer base {
@@ -156,244 +168,240 @@
   color: white;
 }
 
-/* Portfolio Section */
+/* ============================================================
+   PORTFOLIO — ELEGANT SKEUOMORPHIC MANILA FOLDER
+   ============================================================ */
+
 .portfolio-section {
-  background-color: transparent;
   position: relative;
   margin-top: 0;
-  padding-top: 1rem;
-  padding-bottom: 4rem;
+  padding-top: 3.5rem;
+  padding-bottom: 6rem;
   min-height: 80vh;
   z-index: 10;
   width: 100%;
-  /* Allow manilla folder shadow to extend (body still has overflow-x: hidden) */
   overflow: visible;
+
+  /* Warm desk — soft, not harsh */
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(80, 50, 25, 0.35), transparent),
+    linear-gradient(168deg, #2a1c10 0%, #1c1208 55%, #140e06 100%);
 }
 
-/* Add a container for the portfolio content with max-width for larger screens */
+.portfolio-section::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.28), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .portfolio-container {
   width: 100%;
   margin: 0 auto;
   overflow: visible;
-  max-width: 100%; /* Ensure it doesn't exceed viewport width */
-}
-
-/* Shared manilla paper texture — tabs, folder body, collection bar, content, tab seam fills */
-.main-tab,
-.main-tab.active,
-.portfolio-folder,
-.collection-tabs,
-.folder-content,
-.main-tab.active::after,
-.portfolio-folder::before {
-  background-color: var(--manilla-fallback);
-  background-image: var(--manilla-texture);
-  background-repeat: repeat;
-  background-size: 360px auto;
-}
-
-/* Main tabs for Photography, Artwork, Audio */
-.main-tabs-container {
-  display: flex;
-  align-items: flex-end;
+  max-width: 100%;
   position: relative;
-  z-index: 20;
+  z-index: 1;
+}
+
+.folder-outer {
+  position: relative;
+  filter:
+    drop-shadow(0 6px 14px rgba(0, 0, 0, 0.28))
+    drop-shadow(0 22px 48px rgba(0, 0, 0, 0.3));
+}
+
+/* ── FOLDER HEADER (SVG tabs) ── */
+.folder-header {
+  position: relative;
   width: 100%;
-  height: 45px;
+  height: 80px;
+  z-index: 20;
   margin-bottom: -1px;
 }
 
-/* When modal is open, ensure main tabs don't interfere */
-.modal-open .main-tabs-container {
-  z-index: 10; /* Lower z-index when modal is open */
+.folder-header-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.main-tab {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 38px;
-  min-width: 130px;
-  color: #333;
-  font-weight: 600;
-  border-radius: 8px 8px 0 0;
-  cursor: pointer;
-  transition: all 0.3s ease; /* Smoother transition */
-  margin-right: -12px; /* Increased overlap between tabs */
-  
-  /* Replace borders with subtle shadows */
-  border: none;
-  box-shadow: 
-    0 -2px 3px -1px rgba(0,0,0,0.05), /* Top shadow */
-    -1px 0 2px -1px rgba(0,0,0,0.05), /* Left shadow */
-    1px 0 2px -1px rgba(0,0,0,0.05),  /* Right shadow */
-    inset 0 -8px 7px -10px rgba(0,0,0,0.15); /* Bottom inner shadow for depth */
-  
-  /* Improved trapezoid effect with transform */
-  transform: perspective(10px) rotateX(1deg);
-  transform-origin: bottom;
-  
-  /* Account for the extra width at the bottom by adding extra horizontal padding */
-  padding-left: 28px;  /* Increased from 25px */
-  padding-right: 28px; /* Increased from 25px */
+.folder-tab-inactive {
+  filter: brightness(0.84) saturate(0.92);
 }
 
-/* Make sure text stays straight despite the tab transform */
-.main-tab span {
-  transform: perspective(10px) rotateX(-1deg);
-  display: inline-block;
+.folder-tab-active-shape {
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25));
+  vector-effect: non-scaling-stroke;
 }
 
-/* Z-index positioning for stacked effect - increase values to ensure proper stacking */
-.main-tab:nth-child(1) {
-  z-index: 13;
-}
-
-.main-tab:nth-child(2) {
-  z-index: 12;
-}
-
-.main-tab:nth-child(3) {
-  z-index: 11;
-  margin-right: 0; /* Last tab doesn't need right margin */
-}
-
-.main-tab.active {
-  height: 46px; /* Slightly increased to ensure full coverage */
-  z-index: 30; /* Always on top */
-
-  /* Enhanced shadows for active tab - only on top and sides, not bottom */
-  box-shadow: 
-    0 -3px 5px -2px rgba(0,0,0,0.08), /* Stronger top shadow */
-    -1px 0 3px -1px rgba(0,0,0,0.08), /* Stronger left shadow */
-    1px 0 3px -1px rgba(0,0,0,0.08);  /* Stronger right shadow */
-  
-  /* Make active tab slightly larger but don't move it up as much to avoid gap */
-  transform: perspective(10px) rotateX(1deg) translateY(-2px); /* Reduced from -3px */
-  
-  /* Adjust active tab padding to account for trapezoidal shape */
-  padding-left: 30px;  /* Further increased for active tab */
-  padding-right: 30px; /* Further increased for active tab */
-  
-  /* Remove the border-bottom - it's creating a divider we don't want */
-  border-bottom: none;
-  margin-bottom: 0;
-  
-  /* Add a pseudo-element extension to cover any gap */
-  position: relative;
-}
-
-/* Add extension to cover any gap between active tab and folder */
-.main-tab.active::after {
-  content: '';
+.folder-tab-btn {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px; /* Extend below the tab */
-  height: 4px; /* Enough to cover the gap */
-  z-index: 1; /* Above the folder */
+  top: 0;
+  height: 54px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b5230;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: color 0.2s ease;
+  z-index: 2;
 }
 
-/* Portfolio Folder Styles — layered lift like filmstrip, tuned for manilla paper */
+.folder-tab-btn:hover {
+  color: #4a3820;
+}
+
+.folder-tab-btn.active {
+  color: #3a2a14;
+  font-weight: 600;
+}
+
+.folder-score-line {
+  fill: none;
+  stroke: rgba(90, 70, 40, 0.22);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.portfolio-folder,
+.collection-tabs,
+.folder-content {
+  background-color: var(--manilla-fallback);
+  background-image: var(--manilla-texture);
+  background-repeat: repeat;
+  background-size: 900px auto;
+}
+
+/* ── FOLDER BODY ── */
 .portfolio-folder {
-  border-radius: 4px;
   position: relative;
   min-height: 80vh;
   width: 100%;
   overflow: hidden;
   z-index: 10;
-  border: none; /* Remove borders and use shadows instead */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
-    0 2px 4px rgba(0, 0, 0, 0.12),
-    0 10px 28px rgba(0, 0, 0, 0.16),
-    0 20px 48px -12px rgba(0, 0, 0, 0.14);
-  margin-top: -2px; /* Increased overlap with tabs to eliminate gap */
-  border-top-left-radius: 0; /* Only keep top-left corner flat for tab connection */
-  /* Ensure the folder content adapts to the screen size */
   box-sizing: border-box;
+  margin-top: 0;
+  border-radius: 0 0 22px 22px;
+
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    inset 0 0 40px rgba(0, 0, 0, 0.03),
+    inset 6px 0 12px -8px rgba(0, 0, 0, 0.06),
+    inset -6px 0 12px -8px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 16px 40px rgba(0, 0, 0, 0.16);
 }
 
-/* Seamless connection between active tab and folder */
+/* Fold crease at top of body */
 .portfolio-folder::before {
   content: '';
   position: absolute;
-  top: -1px; /* Position exactly at the top of the folder */
+  top: 0;
   left: 0;
   right: 0;
-  height: 3px; /* Small extension to ensure full coverage */
-  z-index: 20; /* Above the folder but below the active tab */
+  height: 3px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.07),
+    transparent
+  );
+  z-index: 2;
+  pointer-events: none;
 }
 
-/* Collection side tabs */
+/* ── COLLECTION TABS ── */
 .collection-tabs {
   position: relative;
-  left: 0;
-  top: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 15px 20px 8px; /* Slightly increased bottom padding */
+  gap: 8px;
+  padding: 18px 24px 12px;
   z-index: 5;
-  border-bottom: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 0%, transparent 16px),
+    var(--manilla-texture);
 }
 
 .collection-tab {
-  height: 30px;
-  padding: 0 15px;
-  background-color: transparent;
-  color: #333;
-  font-weight: 600;
-  font-size: 0.8rem;
-  text-align: center;
-  line-height: 30px;
+  height: 32px;
+  padding: 0 18px;
+  color: #6b5230;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 32px;
   cursor: pointer;
-  border-radius: 15px;
   position: relative;
   transition: all 0.2s ease;
   border: none;
-  /* Use shadows instead of borders for consistency */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .collection-tab:hover {
+  background: rgba(255, 255, 255, 0.38);
   transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
 .collection-tab.active {
-  background-color: #333;
-  color: rgba(255, 255, 255, 0.95);
-  /* Add subtle shadow to active tab */
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  background: rgba(58, 42, 20, 0.82);
+  color: rgba(255, 248, 230, 0.95);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-/* Content area of the folder */
+/* ── FOLDER CONTENT ── */
 .folder-content {
-  padding: 0 20px 20px; /* Remove top padding completely */
+  padding: 0 24px 28px;
   min-height: 60vh;
   width: 100%;
-  color: #333;
+  color: #4a3820;
   box-shadow: none;
-  overflow-x: hidden; /* Prevent horizontal overflow */
-  box-sizing: border-box; /* Include padding in width calculation */
-  position: relative; /* Needed for absolute positioning of loading overlay */
+  overflow-x: hidden;
+  box-sizing: border-box;
+  position: relative;
+  background-image:
+    radial-gradient(ellipse 90% 40% at 50% 0%, rgba(0, 0, 0, 0.03), transparent),
+    var(--manilla-texture);
 }
 
 .folder-content h2 {
-  color: #333; /* Ensure headings are dark */
+  color: #4a3820;
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
 .folder-content p {
-  color: #555; /* Ensure paragraphs are dark but not black */
+  color: #6b5230;
 }
 
-/* Loading states and empty states */
-.folder-loading, 
+/* ── LOADING & EMPTY STATES ── */
+.folder-loading,
 .folder-empty {
   display: flex;
   align-items: center;
@@ -401,10 +409,9 @@
   min-height: 300px;
   width: 100%;
   text-align: center;
-  color: #555;
+  color: #7a5c30;
 }
 
-/* Portfolio loading state */
 .folder-loading {
   position: absolute;
   top: 0;
@@ -414,176 +421,135 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: linear-gradient(
-      rgba(245, 232, 201, 0.78),
-      rgba(245, 232, 201, 0.78)
-    ),
+  background-image:
+    linear-gradient(rgba(232, 213, 163, 0.82), rgba(232, 213, 163, 0.82)),
     var(--manilla-texture);
   background-repeat: repeat;
-  background-size: auto, 360px auto;
-  backdrop-filter: blur(2px);
+  background-size: auto, 900px auto;
+  backdrop-filter: blur(1px);
   z-index: 20;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 6px 6px;
 }
 
-/* Loading spinner animation */
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: #333;
-  border-right-color: #333;
-  animation: spinner 0.8s linear infinite;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
-}
-
-@keyframes spinner {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Smaller spinner for collection tabs */
-.collection-loading-spinner {
-  width: 20px;
-  height: 20px;
-  border-width: 2px;
-}
-
-/* Shimmer effect on top of the loading container */
+/* Loading shimmer line */
 .folder-loading::after {
   content: "";
   position: absolute;
   width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.12), transparent);
   animation: loading-shimmer 1.5s infinite;
   top: 0;
 }
 
 @keyframes loading-shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
-/* Responsive adjustments */
+.loading-spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #7a5c30;
+  border-right-color: #7a5c30;
+  animation: spinner 0.8s linear infinite;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+.collection-loading-spinner {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   :root {
     --container-padding: 1rem;
   }
-  
-  /* Ensure consistent padding for site container on mobile */
+
   .site-container {
     padding-left: var(--container-padding);
     padding-right: var(--container-padding);
-    max-width: 100%; /* Ensure full width on mobile */
+    max-width: 100%;
   }
-  
-  /* Portfolio specific mobile adjustments */
+
   .portfolio-section {
-    padding-top: 0.5rem;
-    padding-bottom: 2rem;
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
   }
-  
+
   .bio-content {
     max-width: 100%;
   }
-  
+
   .bio-content h1 {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
   }
-  
-  .main-tab {
-    min-width: 100px;
-    font-size: 0.9rem;
-    padding-left: 18px; /* Adjusted for trapezoid effect on mobile */
-    padding-right: 18px; /* Adjusted for trapezoid effect on mobile */
-    margin-right: -8px; /* Slightly reduced overlap on mobile */
+
+  .folder-header {
+    height: 64px;
   }
-  
-  .main-tab.active {
-    padding-left: 20px; /* Adjusted for trapezoid effect on mobile */
-    padding-right: 20px; /* Adjusted for trapezoid effect on mobile */
-    transform: perspective(10px) rotateX(1deg) translateY(-1px); /* Even less extreme on mobile to avoid gaps */
+
+  .folder-tab-btn {
+    height: 40px;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    padding-bottom: 8px;
   }
-  
-  .main-tab.active::after {
-    bottom: -1px; /* Slightly higher on mobile */
-    height: 3px; /* Slightly smaller on mobile */
-  }
-  
+
   .collection-tab {
-    font-size: 0.75rem;
-    padding: 0 10px;
-    height: 26px;
-    line-height: 26px;
+    font-size: 0.65rem;
+    padding: 0 14px;
+    height: 28px;
+    line-height: 28px;
   }
-  
+
   .collection-tabs {
-    padding: 10px;
+    padding: 12px 14px 10px;
     gap: 6px;
   }
-  
+
   .folder-content {
-    padding: 10px; /* Reduced padding on mobile */
+    padding: 0 14px 18px;
   }
-  
+
   .masonry-grid {
-    column-count: 1; /* Single column on smallest screens */
+    column-count: 1;
   }
 }
 
-/* More specific small mobile adjustments */
 @media (max-width: 480px) {
   :root {
-    --container-padding: 0.75rem; /* Slightly smaller padding for very small screens */
+    --container-padding: 0.75rem;
   }
-  
-  .main-tabs-container {
-    height: 38px; /* Slightly smaller height */
-    margin-bottom: 0; /* Adjusted for mobile */
+
+  .folder-header {
+    height: 56px;
   }
-  
-  .main-tab {
-    min-width: 80px; /* Narrower tabs on very small screens */
-    font-size: 0.8rem;
-    padding-left: 12px;
-    padding-right: 12px;
-    height: 34px; /* Slightly smaller on mobile */
+
+  .folder-tab-btn {
+    height: 34px;
+    font-size: 0.55rem;
+    letter-spacing: 0.07em;
+    padding: 0 6px 6px;
   }
-  
-  .main-tab.active {
-    height: 38px; /* Match container height */
-    padding-left: 15px;
-    padding-right: 15px;
-    /* No gap between tab and folder */
-    transform: perspective(10px) rotateX(1deg) translateY(-1px);
-  }
-  
-  .main-tab.active::after {
-    bottom: -1px;
-    height: 2px;
-  }
-  
+
   .portfolio-folder {
-    margin-top: -1px; /* Reduced for mobile */
+    border-radius: 0 0 16px 16px;
   }
-  
-  .portfolio-folder::before {
-    height: 2px; /* Slightly smaller on mobile */
-  }
-  
+
   .collection-tabs {
-    padding: 8px 10px; /* Reduced padding for mobile */
+    padding: 10px 12px 8px;
   }
-  
-  /* Ensure image containers don't overflow */
+
   .masonry-grid-item img {
     max-width: 100%;
     height: auto;
@@ -727,20 +693,9 @@
   border-radius: 2px;
 }
 
-/* Portfolio section padding on different devices */
 @media (min-width: 768px) {
-  .portfolio-section {
-    padding-bottom: 5rem;
-  }
-  
   .portfolio-container {
-    max-width: calc(100% - 2rem); /* Give some spacing on the sides */
-  }
-}
-
-@media (min-width: 1024px) {
-  .portfolio-section {
-    padding-bottom: 6rem;
+    max-width: calc(100% - 2rem);
   }
 }
 
