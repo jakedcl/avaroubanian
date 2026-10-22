@@ -27,7 +27,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   const photographyActive = navPhotographyActive(pathname, type);
   const artworkActive = navArtworkActive(pathname, type);
-  const audioActive = pathname === '/audio' || pathname.startsWith('/audio/');
+  const audioActive = pathname === '/audio';
   const shopActive = pathname === '/shop';
   const homeActive = pathname === '/';
 
@@ -93,7 +93,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
       <div className="mt-auto pt-10">
         <a
-          href="https://instagram.com"
+          href="https://instagram.com/avabava35"
           target="_blank"
           rel="noopener noreferrer"
           className="text-[13px] text-neutral-600 no-underline hover:text-neutral-950"
