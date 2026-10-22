@@ -7,7 +7,7 @@ A portfolio website for artist Ava Roubanian, showcasing her artwork, photograph
 - **Responsive Design**: Works on mobile, tablet, and desktop
 - **Visual Gallery**: Display artwork and photography with filtering options
 - **Audio Player**: Listen to music projects directly on the site
-- **Content Management**: Powered by Sanity CMS for easy content updates
+- **Content Management**: Edit content at `/admin` on the live site (Sanity Studio embedded in Next.js)
 
 ## Tech Stack
 
@@ -38,44 +38,53 @@ npm run dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
+5. Edit content at [http://localhost:3000/admin](http://localhost:3000/admin) (Sanity login required)
 
-### Sanity Studio
+### Optional: standalone Sanity dev server
 
-The content management system is powered by Sanity. To run the Sanity Studio:
+Schema types live in `sanity/schemaTypes/`. The shared config is `sanity.config.ts` at the repo root. To run the Studio UI on port 3333:
 
 ```bash
 cd sanity
+npm install
 npm run dev
 ```
-
-Then open [http://localhost:3333](http://localhost:3333) in your browser.
 
 ## Deployment
 
 ### Frontend (Next.js)
 
-The easiest way to deploy the Next.js frontend is through Vercel:
+Deploy through Vercel (connect the Git repository). Set environment variables:
 
-1. Push your code to a Git repository (GitHub, GitLab, etc.)
-2. Connect your repository in the Vercel dashboard
-3. Vercel will automatically deploy the site
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SANITY_*` | Already in `vercel.json` for project/dataset/API version |
+| `SANITY_REVALIDATE_SECRET` | Secret for Sanity → `POST /api/revalidate` webhook (generate a long random string) |
+| `NEXT_PUBLIC_SITE_URL` | Optional canonical site URL for metadata |
 
-### Sanity Studio
+### Sanity
 
-To deploy Sanity Studio:
-
-```bash
-cd sanity
-npx sanity deploy
-```
+1. Deploy schema changes when types change (Sanity CLI or dashboard).
+2. In [Sanity project settings → API → CORS origins](https://www.sanity.io/manage), allow:
+   - `http://localhost:3000` (development)
+   - Your production site URL (e.g. `https://yourdomain.com`)
+3. In [Sanity project settings → API → Webhooks](https://www.sanity.io/manage), create a webhook:
+   - **URL**: `https://yourdomain.com/api/revalidate`
+   - **Dataset**: production
+   - **Trigger on**: Create, Update, Delete
+   - **Secret**: same value as `SANITY_REVALIDATE_SECRET`
+   - **HTTP method**: POST
+   - **Projection**: `{ _type }` (optional)
 
 ## Content Management
 
-After deployment, you can manage content by:
+After deployment, Ava can manage content at **`/admin`** on the website:
 
-1. Logging into the Sanity Studio
-2. Adding, editing, or removing content
-3. Changes will automatically reflect on the website
+1. Log in with her Sanity account
+2. Use **Site settings** for contact email, Instagram, and home page intro
+3. Use **Photography**, **Artwork**, and **Audio** for portfolio collections
+
+Changes appear on the site within seconds via the revalidation webhook (no redeploy needed).
 
 ## License
 

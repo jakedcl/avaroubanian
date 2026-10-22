@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Newsreader } from 'next/font/google';
-import { Suspense } from 'react';
 import './globals.css';
-import SiteShell from '@/components/SiteShell';
 
 const newsreader = Newsreader({
   subsets: ['latin'],
@@ -47,9 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${newsreader.className} min-h-screen bg-white text-neutral-950`}>
-        <Suspense fallback={<div className="min-h-screen bg-white" aria-hidden />}>
-          <SiteShell>{children}</SiteShell>
-        </Suspense>
+        {children}
       </body>
     </html>
   );

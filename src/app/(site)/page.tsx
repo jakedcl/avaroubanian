@@ -10,9 +10,6 @@ import {
   urlForImage,
 } from '@/lib/sanity';
 
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
-
 function shuffle<T>(items: T[]): T[] {
   const arr = [...items];
   for (let i = arr.length - 1; i > 0; i--) {

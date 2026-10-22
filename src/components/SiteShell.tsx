@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import ContactModal from '@/components/ContactModal';
+import ContactPanel from '@/components/ContactPanel';
 
 function navPhotographyActive(pathname: string, type: string | null) {
   if (pathname !== '/visual') return false;
@@ -14,7 +14,13 @@ function navArtworkActive(pathname: string, type: string | null) {
   return pathname === '/visual' && type === 'visual';
 }
 
-export default function SiteShell({ children }: { children: React.ReactNode }) {
+type SiteShellProps = {
+  children: React.ReactNode;
+  contactEmail: string;
+  instagramUrl: string;
+};
+
+export default function SiteShell({ children, contactEmail, instagramUrl }: SiteShellProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const type = searchParams.get('type');
@@ -93,7 +99,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
       <div className="mt-auto pt-10">
         <a
-          href="https://instagram.com/avabava35"
+          href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[13px] text-neutral-600 no-underline hover:text-neutral-950"
@@ -151,7 +157,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
+      <ContactPanel
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+        email={contactEmail}
+      />
     </>
   );
 }
