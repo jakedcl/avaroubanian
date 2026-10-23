@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
-import Image from 'next/image';
+import SanityImage from '@/components/SanityImage';
 import styles from './FilmStrip.module.css';
 import { urlForImage } from '@/lib/sanity';
 import type { SanityImageSource } from '@/lib/sanity';
@@ -68,7 +68,7 @@ export default function FilmStrip({ images }: FilmStripProps) {
           style={{ width: frameWidth, flex: `0 0 ${frameWidth}px` }}
         >
           <div className={styles.frameWindow} aria-hidden>
-            <Image
+            <SanityImage
               src={url}
               alt=""
               width={300}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import SanityImage from '@/components/SanityImage';
 import { urlForImage } from '@/lib/sanity';
 import ImageModal from './ImageModal';
 
@@ -184,7 +184,7 @@ export default function PhotographyContent() {
                     </svg>
                   </div>
                   
-                  <Image
+                  <SanityImage
                     src={urlForImage(image)
                       // Keep original dimensions but set a maximum width for performance
                       .width(1200)
@@ -201,7 +201,6 @@ export default function PhotographyContent() {
                     }}
                     sizes="(max-width: 480px) 95vw, (max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
                     className="transition-transform duration-300 group-hover:scale-105"
-                    unoptimized={false} // Use Next.js image optimization
                   />
                 </div>
               </div>

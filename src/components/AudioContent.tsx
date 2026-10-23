@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { urlForImage } from '@/lib/sanity';
-import Image from 'next/image';
+import SanityImage from '@/components/SanityImage';
 
 interface AudioCollection {
   _id: string;
@@ -175,7 +175,7 @@ export default function AudioContent() {
               {currentMediaItem.coverImage && (
                 <div className="w-full md:w-1/3 lg:w-1/4">
                   <div className="relative aspect-square">
-                    <Image 
+                    <SanityImage 
                       src={urlForImage({
                         ...currentMediaItem.coverImage,
                         _type: 'image',
@@ -263,7 +263,7 @@ export default function AudioContent() {
                   {/* Media Type Icon or Cover Image */}
                   {item.coverImage ? (
                     <div className="w-16 h-16 relative flex-shrink-0">
-                      <Image
+                      <SanityImage
                         src={urlForImage({
                           ...item.coverImage,
                           _type: 'image',
