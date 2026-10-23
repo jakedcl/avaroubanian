@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Invalid signature', { status: 401 });
     }
 
-    revalidateTag('sanity');
+    revalidateTag('sanity', 'max');
     revalidatePath('/');
     revalidatePath('/visual');
     revalidatePath('/audio');
