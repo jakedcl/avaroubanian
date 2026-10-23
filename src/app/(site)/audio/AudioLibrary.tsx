@@ -86,11 +86,24 @@ function AudioLibraryInner() {
   const activeMeta = collections.find((c) => c._id === activeCollection);
   const currentUrl = currentTrack ? mediaUrl(currentTrack) : undefined;
 
+  if (!loadingList && collections.length === 0) {
+    return (
+      <div className="pb-12">
+        <h1 className="font-serif text-[28px] font-medium leading-tight tracking-tight text-neutral-950 md:text-[32px]">
+          Audio
+        </h1>
+        <p className="mt-3 max-w-[60ch] text-[17px] leading-relaxed text-neutral-600">
+          New audio work is on the way.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-12">
       <div className="flex flex-col gap-10 lg:flex-row lg:gap-14">
         <nav className="shrink-0 lg:w-52" aria-label="Audio collections">
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-400">
+          <p className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">
             Collections
           </p>
           {loadingList ? (

@@ -8,7 +8,7 @@ export default function SimpleHero({ bio }: { bio: Bio | null }) {
   if (!body) return null;
 
   return (
-    <div className="mb-12 max-w-2xl text-[15px] leading-[1.7] text-neutral-700 md:mb-14 md:text-base md:leading-relaxed">
+    <div className="mb-12 max-w-[60ch] font-serif text-[20px] leading-[1.5] text-neutral-800 md:mb-16 md:text-[22px]">
       {body}
     </div>
   );

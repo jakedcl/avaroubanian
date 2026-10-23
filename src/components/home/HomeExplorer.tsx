@@ -39,10 +39,10 @@ export default function HomeExplorer({
   return (
     <div className="flex flex-col gap-16 md:gap-20">
       <section>
-        <h2 className="text-lg font-semibold tracking-tight text-neutral-950 md:text-xl">
+        <h2 className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
           Featured
         </h2>
-        <div className="relative mt-6 aspect-[4/3] w-full max-w-4xl bg-neutral-100">
+        <div className="relative mt-6 aspect-[4/3] w-full max-w-4xl">
           {current ? (
             <Image
               src={current.src}
@@ -61,7 +61,7 @@ export default function HomeExplorer({
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold tracking-tight text-neutral-950 md:text-xl">
+        <h2 className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
           Catalog
         </h2>
         {catalogTiles.length === 0 ? (
@@ -74,7 +74,7 @@ export default function HomeExplorer({
                   href={tile.href}
                   className="group block no-underline"
                 >
-                  <div className="aspect-[4/5] w-full bg-neutral-100">
+                  <div className="aspect-[4/5] w-full">
                     {tile.imageSrc ? (
                       <Image
                         src={tile.imageSrc}

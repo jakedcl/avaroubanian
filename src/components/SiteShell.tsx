@@ -18,9 +18,10 @@ type SiteShellProps = {
   children: React.ReactNode;
   contactEmail: string;
   instagramUrl: string;
+  hasAudio: boolean;
 };
 
-export default function SiteShell({ children, contactEmail, instagramUrl }: SiteShellProps) {
+export default function SiteShell({ children, contactEmail, instagramUrl, hasAudio }: SiteShellProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const type = searchParams.get('type');
@@ -34,64 +35,71 @@ export default function SiteShell({ children, contactEmail, instagramUrl }: Site
   const photographyActive = navPhotographyActive(pathname, type);
   const artworkActive = navArtworkActive(pathname, type);
   const audioActive = pathname === '/audio';
-  const shopActive = pathname === '/shop';
   const homeActive = pathname === '/';
 
   const linkClass = (active: boolean) =>
-    `block w-full py-3 text-left text-[15px] leading-snug no-underline transition-colors ${
+    `block w-full py-1 text-left font-sans text-[12px] uppercase tracking-[0.08em] leading-snug no-underline transition-colors ${
       active
         ? 'font-semibold text-neutral-950'
-        : 'font-normal text-neutral-800 hover:text-neutral-600'
+        : 'font-normal text-neutral-500 hover:text-neutral-950'
     }`;
+
+  const dash = (active: boolean) => (
+    <span aria-hidden className="inline-block w-4 text-neutral-950">
+      {active ? '—' : ''}
+    </span>
+  );
 
   const NavBlock = (
     <div className="flex min-h-0 flex-1 flex-col">
-      <Link href="/" className="mb-8 block shrink-0 no-underline" onClick={() => setNavOpen(false)}>
-        <span className="text-xl font-semibold tracking-tight text-neutral-950 md:text-[1.35rem]">
+      <Link href="/" className="mb-10 block shrink-0 no-underline" onClick={() => setNavOpen(false)}>
+        <span className="font-serif text-[22px] font-medium leading-tight tracking-tight text-neutral-950 md:text-[24px]">
           Ava Roubanian
         </span>
       </Link>
 
       <nav aria-label="Primary" className="shrink-0">
-        <ul className="border-t border-neutral-200">
-          <li className="border-b border-neutral-200">
-            <Link href="/" className={linkClass(homeActive)}>
-              Home
+        <ul className="flex flex-col gap-[10px]">
+          <li>
+            <Link href="/" className={linkClass(homeActive)} aria-current={homeActive ? 'page' : undefined}>
+              {dash(homeActive)}Home
             </Link>
           </li>
-          <li className="border-b border-neutral-200">
+          <li>
             <Link
               href="/visual?type=photography"
               className={linkClass(photographyActive)}
+              aria-current={photographyActive ? 'page' : undefined}
             >
-              Photography
+              {dash(photographyActive)}Photography
             </Link>
           </li>
-          <li className="border-b border-neutral-200">
-            <Link href="/visual?type=visual" className={linkClass(artworkActive)}>
-              Artwork
+          <li>
+            <Link
+              href="/visual?type=visual"
+              className={linkClass(artworkActive)}
+              aria-current={artworkActive ? 'page' : undefined}
+            >
+              {dash(artworkActive)}Artwork
             </Link>
           </li>
-          <li className="border-b border-neutral-200">
-            <Link href="/audio" className={linkClass(audioActive)}>
-              Audio
-            </Link>
-          </li>
-          <li className="border-b border-neutral-200">
-            <Link href="/shop" className={linkClass(shopActive)}>
-              Shop
-            </Link>
-          </li>
-          <li className="border-b border-neutral-200">
+          {hasAudio ? (
+            <li>
+              <Link href="/audio" className={linkClass(audioActive)} aria-current={audioActive ? 'page' : undefined}>
+                {dash(audioActive)}Audio
+              </Link>
+            </li>
+          ) : null}
+          <li>
             <button
               type="button"
-              className={`${linkClass(false)} cursor-pointer bg-transparent`}
+              className={`${linkClass(contactOpen)} cursor-pointer bg-transparent`}
               onClick={() => {
                 setContactOpen(true);
                 setNavOpen(false);
               }}
             >
-              Contact
+              {dash(contactOpen)}Contact
             </button>
           </li>
         </ul>
@@ -102,11 +110,11 @@ export default function SiteShell({ children, contactEmail, instagramUrl }: Site
           href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[13px] text-neutral-600 no-underline hover:text-neutral-950"
+          className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500 no-underline hover:text-neutral-950"
         >
           Instagram
         </a>
-        <p className="mt-6 text-[11px] uppercase tracking-[0.12em] text-neutral-400">
+        <p className="mt-4 font-sans text-[11px] uppercase tracking-[0.08em] text-neutral-400">
           © {new Date().getFullYear()} Ava Roubanian
         </p>
       </div>
@@ -115,17 +123,17 @@ export default function SiteShell({ children, contactEmail, instagramUrl }: Site
 
   return (
     <>
-      <div className="flex min-h-screen flex-col bg-white md:flex-row">
+      <div className="flex min-h-screen flex-col bg-white text-[17px] leading-[1.6] md:flex-row md:text-[18px]">
         {/* Mobile top bar */}
         <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-4 md:hidden">
           <Link href="/" className="no-underline" onClick={() => setNavOpen(false)}>
-            <span className="text-lg font-semibold tracking-tight text-neutral-950">
+            <span className="font-serif text-[22px] font-medium leading-none tracking-tight text-neutral-950">
               Ava Roubanian
             </span>
           </Link>
           <button
             type="button"
-            className="text-[12px] font-medium uppercase tracking-[0.14em] text-neutral-800"
+            className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-800"
             aria-expanded={navOpen}
             aria-controls="site-sidebar"
             onClick={() => setNavOpen((o) => !o)}
@@ -145,7 +153,7 @@ export default function SiteShell({ children, contactEmail, instagramUrl }: Site
 
         <aside
           id="site-sidebar"
-          className={`fixed bottom-0 left-0 top-14 z-50 flex w-[min(100%,18rem)] flex-col border-r border-neutral-200 bg-white px-6 py-8 transition-transform duration-200 ease-out md:static md:top-auto md:z-0 md:h-auto md:min-h-screen md:translate-x-0 md:px-7 md:py-10 ${
+          className={`fixed bottom-0 left-0 top-14 z-50 flex w-[min(100%,18rem)] flex-col border-r border-neutral-200 bg-white px-6 py-8 transition-transform duration-200 ease-out md:static md:top-auto md:z-0 md:h-auto md:min-h-screen md:w-60 md:border-r-0 md:translate-x-0 md:px-8 md:py-12 ${
             navOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full md:translate-x-0'
           }`}
         >
@@ -161,6 +169,7 @@ export default function SiteShell({ children, contactEmail, instagramUrl }: Site
         isOpen={contactOpen}
         onClose={() => setContactOpen(false)}
         email={contactEmail}
+        instagramUrl={instagramUrl}
       />
     </>
   );
