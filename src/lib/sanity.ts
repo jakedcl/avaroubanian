@@ -1,5 +1,5 @@
 import { createClient } from 'next-sanity';
-import imageUrlBuilder from '@sanity/image-url';
+import { createImageUrlBuilder } from '@sanity/image-url';
 import { SITE_DEFAULTS } from '@/lib/site-defaults';
 
 // Define a type for Sanity image reference
@@ -33,7 +33,7 @@ export const client = createClient({
 const fetchOptions = { next: { tags: ['sanity'] } };
 
 // Helper function to build image URLs with the Sanity Image URL builder
-const builder = imageUrlBuilder(client);
+const builder = createImageUrlBuilder(client);
 
 export function urlForImage(source: SanityImageSource | string) {
   return builder.image(source);
