@@ -8,10 +8,181 @@
 :root {
   --container-width: 72rem;
   --container-padding: 1rem;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 200ms;
+  --dur-base: 500ms;
+  --dur-slow: 900ms;
 }
 
-html {
-  scroll-behavior: smooth;
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out-soft),
+    transform var(--dur-slow) var(--ease-out-soft);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.page-enter {
+  animation: fade-in var(--dur-base) var(--ease-out-soft) both;
+}
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size var(--dur-base) var(--ease-out-soft);
+}
+
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1px;
+}
+
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition:
+    transform 1200ms var(--ease-out-soft),
+    opacity var(--dur-base) var(--ease-out-soft);
+}
+
+.img-zoom:hover img {
+  transform: scale(1.03);
+}
+
+.img-loaded {
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-soft);
+}
+
+.img-loaded.is-loaded {
+  opacity: 1;
+}
+
+.hero-fade-in {
+  animation: fade-in var(--dur-slow) var(--ease-out-soft) both;
+}
+
+.lightbox-overlay {
+  animation: fade-in 300ms var(--ease-out-soft) both;
+}
+
+.lightbox-overlay--closing {
+  animation: fade-in 300ms var(--ease-out-soft) reverse both;
+}
+
+.lightbox-image {
+  animation: fade-in 250ms var(--ease-out-soft) both;
+}
+
+.nav-drawer-backdrop {
+  animation: fade-in 300ms var(--ease-out-soft) both;
+}
+
+.nav-drawer-panel {
+  animation: nav-drawer-in 300ms var(--ease-out-soft) both;
+}
+
+@keyframes nav-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.contact-backdrop {
+  animation: fade-in 300ms var(--ease-out-soft) both;
+}
+
+.contact-panel {
+  animation: fade-up 400ms var(--ease-out-soft) both;
+}
+
+.copy-label {
+  position: relative;
+}
+
+.copy-label-text {
+  transition: opacity 150ms var(--ease-out-soft);
+}
+
+.copy-label-text--hidden {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .page-enter {
+    animation: none !important;
+  }
+
+  .img-zoom img,
+  .link-underline,
+  .img-loaded {
+    transition: none !important;
+  }
+
+  .img-zoom:hover img {
+    transform: none !important;
+  }
+
+  .hero-fade-in,
+  .lightbox-overlay,
+  .lightbox-overlay--closing,
+  .lightbox-image,
+  .nav-drawer-backdrop,
+  .nav-drawer-panel,
+  .contact-backdrop,
+  .contact-panel {
+    animation: none !important;
+  }
+
+  .img-loaded {
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {

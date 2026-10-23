@@ -44,6 +44,8 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
         : 'font-normal text-neutral-500 hover:text-neutral-950'
     }`;
 
+  const navLabel = (text: string) => <span className="link-underline">{text}</span>;
+
   const dash = (active: boolean) => (
     <span aria-hidden className="inline-block w-4 text-neutral-950">
       {active ? '—' : ''}
@@ -62,7 +64,8 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
         <ul className="flex flex-col gap-[10px]">
           <li>
             <Link href="/" className={linkClass(homeActive)} aria-current={homeActive ? 'page' : undefined}>
-              {dash(homeActive)}Home
+              {dash(homeActive)}
+              {navLabel('Home')}
             </Link>
           </li>
           <li>
@@ -71,7 +74,8 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
               className={linkClass(photographyActive)}
               aria-current={photographyActive ? 'page' : undefined}
             >
-              {dash(photographyActive)}Photography
+              {dash(photographyActive)}
+              {navLabel('Photography')}
             </Link>
           </li>
           <li>
@@ -80,13 +84,15 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
               className={linkClass(artworkActive)}
               aria-current={artworkActive ? 'page' : undefined}
             >
-              {dash(artworkActive)}Artwork
+              {dash(artworkActive)}
+              {navLabel('Artwork')}
             </Link>
           </li>
           {hasAudio ? (
             <li>
               <Link href="/audio" className={linkClass(audioActive)} aria-current={audioActive ? 'page' : undefined}>
-                {dash(audioActive)}Audio
+                {dash(audioActive)}
+                {navLabel('Audio')}
               </Link>
             </li>
           ) : null}
@@ -99,7 +105,8 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
                 setNavOpen(false);
               }}
             >
-              {dash(contactOpen)}Contact
+              {dash(contactOpen)}
+              {navLabel('Contact')}
             </button>
           </li>
         </ul>
@@ -145,7 +152,7 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
         {navOpen ? (
           <button
             type="button"
-            className="fixed inset-0 top-14 z-40 bg-black/20 md:hidden"
+            className="nav-drawer-backdrop fixed inset-0 top-14 z-40 bg-black/20 md:hidden"
             aria-label="Close menu"
             onClick={() => setNavOpen(false)}
           />
@@ -153,15 +160,17 @@ export default function SiteShell({ children, contactEmail, instagramUrl, hasAud
 
         <aside
           id="site-sidebar"
-          className={`fixed bottom-0 left-0 top-14 z-50 flex w-[min(100%,18rem)] flex-col border-r border-neutral-200 bg-white px-6 py-8 transition-transform duration-200 ease-out md:static md:top-auto md:z-0 md:h-auto md:min-h-screen md:w-60 md:border-r-0 md:translate-x-0 md:px-8 md:py-12 ${
-            navOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full md:translate-x-0'
+          className={`fixed bottom-0 left-0 top-14 z-50 flex w-[min(100%,18rem)] flex-col border-r border-neutral-200 bg-white px-6 py-8 md:static md:top-auto md:z-0 md:h-auto md:min-h-screen md:w-60 md:border-r-0 md:translate-x-0 md:px-8 md:py-12 ${
+            navOpen
+              ? 'nav-drawer-panel translate-x-0 shadow-xl'
+              : '-translate-x-full md:translate-x-0'
           }`}
         >
           {NavBlock}
         </aside>
 
         <main className="min-h-0 flex-1 min-w-0 px-5 py-8 md:px-10 md:py-12 lg:pl-14 lg:pr-16">
-          <div className="mx-auto w-full max-w-6xl">{children}</div>
+          <div className="page-enter mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
 

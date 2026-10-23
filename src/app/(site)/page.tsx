@@ -1,102 +1,83 @@
-import HomeExplorer, { type CatalogTile } from '@/components/home/HomeExplorer';
+import HomeExplorer, { type CatalogTile, type HomeHero } from '@/components/home/HomeExplorer';
+import Reveal from '@/components/Reveal';
 import SimpleHero from '@/components/home/SimpleHero';
-import type { SanityImageSource } from '@/lib/sanity';
+import type { SanityImageWithMeta } from '@/lib/sanity';
 import {
-  getAllGalleryImages,
   getAudioCollections,
   getBio,
+  getHomeHeroImage,
   getPhotographyCollections,
   getVisualCollections,
   urlForImage,
 } from '@/lib/sanity';
 
-function shuffle<T>(items: T[]): T[] {
-  const arr = [...items];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
 function sortByOrder<T extends { order?: number }>(rows: T[]): T[] {
   return [...rows].sort((a, b) => (a.order ?? 100) - (b.order ?? 100));
 }
 
-/** Sanity list shape for home catalog (GROQ is untyped). */
+/** Sanity list shape for home categories (GROQ is untyped). */
 interface CollectionListRow {
   _id: string;
   title: string;
   order?: number;
-  imageCount?: number;
-  mediaCount?: number;
-  previewImage?: unknown;
+  previewImage?: SanityImageWithMeta | null;
 }
 
-function previewUrl(img: unknown): string | null {
-  if (!img || typeof img !== 'object' || !('asset' in img)) return null;
-  const asset = (img as { asset?: { _ref?: string } }).asset;
-  if (!asset?._ref) return null;
-  return urlForImage(img as SanityImageSource)
-    .width(720)
-    .height(900)
+function tileSrc(img: SanityImageWithMeta | null | undefined): string | null {
+  if (!img?.asset?._ref) return null;
+  return urlForImage(img)
+    .width(1200)
+    .height(1500)
     .fit('crop')
     .auto('format')
     .quality(82)
     .url();
 }
 
+function toTiles(rows: CollectionListRow[], kind: string, hrefFor: (id: string) => string): CatalogTile[] {
+  return sortByOrder(rows).map((c) => ({
+    href: hrefFor(c._id),
+    title: c.title,
+    kind,
+    imageSrc: tileSrc(c.previewImage),
+    lqip: c.previewImage?.lqip ?? null,
+  }));
+}
+
 export default async function Home() {
-  const [bio, galleryImages, photoCols, artCols, audioCols] = await Promise.all([
+  const [bio, heroImage, photoCols, artCols, audioCols] = await Promise.all([
     getBio(),
-    getAllGalleryImages(),
+    getHomeHeroImage(),
     getPhotographyCollections(),
     getVisualCollections(),
     getAudioCollections(),
   ]);
 
-  const flatSources = shuffle<SanityImageSource>([
-    ...(bio?.images ?? []),
-    ...galleryImages,
-  ]);
-
-  const slides = flatSources.map((source, i) => ({
-    src: urlForImage(source).width(1680).height(1050).fit('max').auto('format').quality(85).url(),
-    alt: `Portfolio image ${i + 1}`,
-  }));
-
-  const initialSlideIndex =
-    slides.length > 0 ? Math.floor(Math.random() * slides.length) : 0;
+  const hero: HomeHero | null = heroImage
+    ? {
+        src: urlForImage(heroImage).width(2000).fit('max').auto('format').quality(85).url(),
+        width: heroImage.dimensions?.width ?? 1600,
+        height: heroImage.dimensions?.height ?? 1200,
+        lqip: heroImage.lqip ?? null,
+        alt: 'Work by Ava Roubanian',
+      }
+    : null;
 
   const catalogTiles: CatalogTile[] = [
-    ...sortByOrder(photoCols as CollectionListRow[]).map((c) => ({
-      href: `/visual?type=photography&collection=${c._id}`,
-      title: c.title,
-      subtitle: `Photography · ${c.imageCount ?? 0} images`,
-      imageSrc: previewUrl(c.previewImage),
-    })),
-    ...sortByOrder(artCols as CollectionListRow[]).map((c) => ({
-      href: `/visual?type=visual&collection=${c._id}`,
-      title: c.title,
-      subtitle: `Artwork · ${c.imageCount ?? 0} images`,
-      imageSrc: previewUrl(c.previewImage),
-    })),
-    ...sortByOrder(audioCols as CollectionListRow[]).map((c) => ({
-      href: `/audio?collection=${c._id}`,
-      title: c.title,
-      subtitle: `Audio · ${c.mediaCount ?? 0} tracks`,
-      imageSrc: previewUrl(c.previewImage),
-    })),
+    ...toTiles(photoCols as CollectionListRow[], 'Photography', (id) => `/visual?type=photography&collection=${id}`),
+    ...toTiles(artCols as CollectionListRow[], 'Artwork', (id) => `/visual?type=visual&collection=${id}`),
+    ...toTiles(audioCols as CollectionListRow[], 'Audio', (id) => `/audio?collection=${id}`),
   ];
 
   return (
-    <div>
-      <SimpleHero bio={bio} />
-      <HomeExplorer
-        slides={slides}
-        initialSlideIndex={initialSlideIndex}
-        catalogTiles={catalogTiles}
-      />
-    </div>
+    <HomeExplorer
+      hero={hero}
+      intro={
+        <Reveal delay={150}>
+          <SimpleHero bio={bio} />
+        </Reveal>
+      }
+      catalogTiles={catalogTiles}
+    />
   );
 }
