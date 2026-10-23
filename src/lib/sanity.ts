@@ -1,5 +1,6 @@
 import { createClient } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
+import { SITE_DEFAULTS } from '@/lib/site-defaults';
 
 // Define a type for Sanity image reference
 export interface SanityImageSource {
@@ -26,8 +27,10 @@ export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'z85vvbbq',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05-03',
-  useCdn: false, // During development, use false. For production, you can use true
+  useCdn: true,
 });
+
+const fetchOptions = { next: { tags: ['sanity'] } };
 
 // Helper function to build image URLs with the Sanity Image URL builder
 const builder = imageUrlBuilder(client);
@@ -36,15 +39,95 @@ export function urlForImage(source: SanityImageSource | string) {
   return builder.image(source);
 }
 
-// Fetch Bio Information
+export type SiteSettings = {
+  contactEmail: string;
+  instagramUrl: string;
+  bioTitle: string;
+  bioContent?: unknown;
+  bioImages?: SanityImageSource[];
+  bioContentPlain: string;
+};
+
+type RawSiteSettings = {
+  contactEmail?: string | null;
+  instagramUrl?: string | null;
+  bioTitle?: string | null;
+  bioContent?: unknown;
+  bioImages?: SanityImageSource[];
+  bioContentPlain?: string | null;
+};
+
+function resolveSiteSettings(raw: RawSiteSettings | null): SiteSettings {
+  const bioContentPlain =
+    raw?.bioContentPlain?.trim() || SITE_DEFAULTS.bioContentPlain;
+
+  return {
+    contactEmail: raw?.contactEmail?.trim() || SITE_DEFAULTS.contactEmail,
+    instagramUrl: raw?.instagramUrl?.trim() || SITE_DEFAULTS.instagramUrl,
+    bioTitle: raw?.bioTitle?.trim() || SITE_DEFAULTS.bioTitle,
+    bioContent: raw?.bioContent,
+    bioImages: raw?.bioImages ?? [],
+    bioContentPlain,
+  };
+}
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const settings = await client.fetch<RawSiteSettings | null>(
+    `*[_type == "siteSettings"][0]{
+      contactEmail,
+      instagramUrl,
+      bioTitle,
+      bioContent,
+      bioImages,
+      "bioContentPlain": coalesce(pt::text(bioContent), "")
+    }`,
+    {},
+    fetchOptions,
+  );
+
+  if (settings?.bioContentPlain?.trim() || settings?.bioContent) {
+    return resolveSiteSettings(settings);
+  }
+
+  const legacyBio = await client.fetch<{
+    title?: string | null;
+    content?: unknown;
+    images?: SanityImageSource[];
+    contentPlain?: string | null;
+  } | null>(
+    `*[_type == "bio"][0]{
+      title,
+      content,
+      images,
+      "contentPlain": coalesce(pt::text(content), "")
+    }`,
+    {},
+    fetchOptions,
+  );
+
+  if (legacyBio) {
+    return resolveSiteSettings({
+      contactEmail: settings?.contactEmail,
+      instagramUrl: settings?.instagramUrl,
+      bioTitle: settings?.bioTitle ?? legacyBio.title,
+      bioContent: settings?.bioContent ?? legacyBio.content,
+      bioImages: settings?.bioImages ?? legacyBio.images,
+      bioContentPlain: settings?.bioContentPlain || legacyBio.contentPlain,
+    });
+  }
+
+  return resolveSiteSettings(settings);
+}
+
+// Fetch Bio Information (home page)
 export async function getBio() {
-  const timestamp = new Date().getTime();
-  return client.fetch(`*[_type == "bio"][0]{
-    title,
-    content,
-    "contentPlain": coalesce(pt::text(content), ""),
-    images
-  }`, { timestamp });
+  const settings = await getSiteSettings();
+  return {
+    title: settings.bioTitle,
+    content: settings.bioContent,
+    contentPlain: settings.bioContentPlain,
+    images: settings.bioImages,
+  };
 }
 
 /** All images from photography, artwork (visual), and audio track covers — shuffled once. */
@@ -52,9 +135,13 @@ export async function getAllGalleryImages(): Promise<SanityImageSource[]> {
   const [photoVisual, audioCovers] = await Promise.all([
     client.fetch<{ images?: SanityImageSource[] }[]>(
       `*[_type in ["photography", "visual"]]{ images }`,
+      {},
+      fetchOptions,
     ),
     client.fetch<{ tracks?: { coverImage?: SanityImageSource }[] }[]>(
       `*[_type == "audio"]{ tracks[]{ coverImage } }`,
+      {},
+      fetchOptions,
     ),
   ]);
 
@@ -81,7 +168,8 @@ export const getFilmstripImages = getAllGalleryImages;
 
 // Fetch all Photography collections
 export async function getPhotographyCollections() {
-  return client.fetch(`*[_type == "photography"] | order(order asc, title asc) {
+  return client.fetch(
+    `*[_type == "photography"] | order(order asc, title asc) {
     _id,
     title,
     slug,
@@ -89,12 +177,16 @@ export async function getPhotographyCollections() {
     order,
     "imageCount": count(images),
     "previewImage": images[0]
-  }`);
+  }`,
+    {},
+    fetchOptions,
+  );
 }
 
 // Fetch a specific Photography collection with its images
 export async function getPhotographyCollection(collectionId: string) {
-  return client.fetch(`*[_type == "photography" && _id == $id][0]{
+  return client.fetch(
+    `*[_type == "photography" && _id == $id][0]{
     _id,
     title,
     slug,
@@ -103,12 +195,16 @@ export async function getPhotographyCollection(collectionId: string) {
       _key,
       asset
     }
-  }`, { id: collectionId });
+  }`,
+    { id: collectionId },
+    fetchOptions,
+  );
 }
 
 // Fetch all Visual Art collections
 export async function getVisualCollections() {
-  return client.fetch(`*[_type == "visual"] | order(order asc, title asc) {
+  return client.fetch(
+    `*[_type == "visual"] | order(order asc, title asc) {
     _id,
     title,
     slug,
@@ -116,12 +212,16 @@ export async function getVisualCollections() {
     order,
     "imageCount": count(images),
     "previewImage": images[0]
-  }`);
+  }`,
+    {},
+    fetchOptions,
+  );
 }
 
 // Fetch a specific Visual Art collection with its images
 export async function getVisualCollection(collectionId: string) {
-  return client.fetch(`*[_type == "visual" && _id == $id][0]{
+  return client.fetch(
+    `*[_type == "visual" && _id == $id][0]{
     _id,
     title,
     slug,
@@ -130,12 +230,16 @@ export async function getVisualCollection(collectionId: string) {
       _key,
       asset
     }
-  }`, { id: collectionId });
+  }`,
+    { id: collectionId },
+    fetchOptions,
+  );
 }
 
 // Fetch Audio
 export async function getAudio({ limit = 10, skip = 0 } = {}) {
-  return client.fetch(`*[_type == "audio"] | order(year desc) [${skip}...${skip + limit}]{
+  return client.fetch(
+    `*[_type == "audio"] | order(year desc) [${skip}...${skip + limit}]{
     _id,
     title,
     slug,
@@ -146,12 +250,16 @@ export async function getAudio({ limit = 10, skip = 0 } = {}) {
     videoUrl,
     credits,
     lyrics,
-  }`);
+  }`,
+    {},
+    fetchOptions,
+  );
 }
 
 // Fetch Audio Collections
 export async function getAudioCollections() {
-  return client.fetch(`*[_type == "audio"] | order(order asc, title asc) {
+  return client.fetch(
+    `*[_type == "audio"] | order(order asc, title asc) {
     _id,
     title,
     slug,
@@ -159,12 +267,16 @@ export async function getAudioCollections() {
     order,
     "mediaCount": count(tracks),
     "previewImage": tracks[0].coverImage
-  }`);
+  }`,
+    {},
+    fetchOptions,
+  );
 }
 
 // Fetch a specific Audio Collection with its tracks
 export async function getAudioCollection(collectionId: string) {
-  return client.fetch(`*[_type == "audio" && _id == $id][0]{
+  return client.fetch(
+    `*[_type == "audio" && _id == $id][0]{
     _id,
     title,
     slug,
@@ -183,15 +295,18 @@ export async function getAudioCollection(collectionId: string) {
         }
       }
     }
-  }`, { id: collectionId });
+  }`,
+    { id: collectionId },
+    fetchOptions,
+  );
 }
 
 // Fetch Visual Items (combined visual and photography with category filtering)
-export async function getVisualItems({ 
-  limit = 50, 
-  skip = 0, 
+export async function getVisualItems({
+  limit = 50,
+  skip = 0,
   type = 'all',
-  category = undefined 
+  category = undefined,
 }: {
   limit?: number;
   skip?: number;
@@ -199,38 +314,37 @@ export async function getVisualItems({
   category?: string | null | undefined;
 } = {}) {
   let query = '';
-  
+
   if (type === 'visual') {
     if (category) {
-      // Fetch visual with specific category
       query = `*[_type == "visual" && category == "${category}"] | order(year desc) [${skip}...${skip + limit}]`;
     } else {
-      // Fetch all visual
       query = `*[_type == "visual"] | order(year desc) [${skip}...${skip + limit}]`;
     }
   } else if (type === 'photography') {
     if (category) {
-      // Fetch photography with specific category
       query = `*[_type == "photography" && category == "${category}"] | order(year desc) [${skip}...${skip + limit}]`;
     } else {
-      // Fetch all photography
       query = `*[_type == "photography"] | order(year desc) [${skip}...${skip + limit}]`;
     }
   } else {
-    // Combined query for both visual and photography
     query = `*[_type in ["visual", "photography"]] | order(year desc) [${skip}...${skip + limit}]`;
   }
-  
-  return client.fetch(query);
+
+  return client.fetch(query, {}, fetchOptions);
 }
 
 // Fetch categories
 export async function getCategories() {
-  return client.fetch(`*[_type == "category"] | order(title asc){
+  return client.fetch(
+    `*[_type == "category"] | order(title asc){
     _id,
     title,
     slug,
     description,
     color,
-  }`);
-} 
+  }`,
+    {},
+    fetchOptions,
+  );
+}
