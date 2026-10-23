@@ -7,9 +7,10 @@ interface ContactPanelProps {
   isOpen: boolean;
   onClose: () => void;
   email: string;
+  instagramUrl: string;
 }
 
-export default function ContactPanel({ isOpen, onClose, email }: ContactPanelProps) {
+export default function ContactPanel({ isOpen, onClose, email, instagramUrl }: ContactPanelProps) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -49,62 +50,78 @@ export default function ContactPanel({ isOpen, onClose, email }: ContactPanelPro
   return (
     <AnimatePresence>
       {isOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/40 p-4 backdrop-blur-md"
           onClick={handleBackdropClick}
         >
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="relative w-full max-w-lg border border-neutral-200 bg-white p-8 shadow-[0_24px_64px_rgba(0,0,0,0.12)] md:p-10"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="contact-title"
           >
-            <div className="border-b border-neutral-200 pb-3">
-              <h2 id="contact-title" className="text-lg font-semibold text-neutral-900">
-                Contact
-              </h2>
-              <p className="mt-1 text-sm text-neutral-600">Email Ava directly.</p>
-            </div>
+            <h2
+              id="contact-title"
+              className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500"
+            >
+              Contact
+            </h2>
+            <p className="mt-3 font-serif text-[17px] leading-snug text-neutral-700">
+              For commissions, prints &amp; shows
+            </p>
 
-            <div className="pt-5">
-              <a
-                href={`mailto:${email}`}
-                className="block break-all text-[15px] font-medium text-neutral-950 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-950"
-              >
-                {email}
-              </a>
+            <a
+              href={`mailto:${email}`}
+              className="mt-6 block break-all font-serif text-[24px] leading-tight text-neutral-950 underline decoration-neutral-300 underline-offset-[6px] hover:decoration-neutral-950 md:text-[28px]"
+            >
+              {email}
+            </a>
 
+            <div className="mt-8 flex flex-wrap items-center gap-6">
               <button
                 type="button"
                 onClick={handleCopy}
-                className="mt-4 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-50"
+                aria-live="polite"
+                className="border border-neutral-950 bg-white px-4 py-2 font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white"
               >
                 {copied ? 'Copied' : 'Copy email'}
               </button>
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-neutral-600 no-underline hover:text-neutral-950"
+              >
+                Instagram ↗
+              </a>
             </div>
 
             <button
+              type="button"
               onClick={onClose}
-              className="absolute right-3 top-3 rounded-md p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+              className="absolute right-3 top-3 p-2 text-neutral-500 hover:text-neutral-950"
               aria-label="Close"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path
                   d="M18 6L6 18M6 6L18 18"
                   stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="square"
                 />
               </svg>
             </button>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

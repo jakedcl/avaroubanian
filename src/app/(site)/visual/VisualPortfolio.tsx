@@ -22,6 +22,8 @@ interface MergedCollection extends Collection {
 interface CollectionImage {
   _key: string;
   asset: { _ref: string; _type: string };
+  dimensions?: { width: number; height: number; aspectRatio: number } | null;
+  lqip?: string | null;
 }
 
 function mergeCollections(
@@ -130,9 +132,9 @@ function VisualPortfolioInner() {
   return (
     <div className="pb-12">
       {loadingCollections ? (
-        <p className="text-sm text-neutral-600">Loading…</p>
+        <p className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">Loading…</p>
       ) : merged.length === 0 ? (
-        <p className="text-sm text-neutral-600">No collections yet.</p>
+        <p className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">No collections yet.</p>
       ) : (
         <>
           <nav
@@ -146,10 +148,10 @@ function VisualPortfolioInner() {
                   key={c._id}
                   href={`/visual?type=${c.kind}&collection=${c._id}`}
                   scroll={false}
-                  className={`-mb-px shrink-0 whitespace-nowrap border-b-2 pb-3 text-[15px] no-underline ${
+                  className={`-mb-px shrink-0 whitespace-nowrap border-b-2 pb-3 font-sans text-[12px] uppercase tracking-[0.08em] no-underline ${
                     active
-                      ? 'border-neutral-950 font-semibold text-neutral-950'
-                      : 'border-transparent font-normal text-neutral-500 hover:text-neutral-800'
+                      ? 'border-neutral-950 font-medium text-neutral-950'
+                      : 'border-transparent font-medium text-neutral-500 hover:text-neutral-950'
                   }`}
                 >
                   {c.title}
@@ -160,25 +162,22 @@ function VisualPortfolioInner() {
 
           <div className="mt-10 min-w-0">
             {activeMeta && (
-              <header className="mb-6">
-                <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
+              <header className="mb-8">
+                <h1 className="font-serif text-[28px] font-medium leading-tight tracking-tight text-neutral-950 md:text-[32px]">
                   {activeMeta.title}
                 </h1>
                 {activeMeta.description ? (
-                  <p className="mt-1 text-sm text-neutral-600">{activeMeta.description}</p>
+                  <p className="mt-2 max-w-[60ch] text-[17px] leading-relaxed text-neutral-600">{activeMeta.description}</p>
                 ) : null}
               </header>
             )}
 
             {loadingImages ? (
-              <p className="text-sm text-neutral-600">Loading images…</p>
+              <p className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">Loading images…</p>
             ) : (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="columns-1 gap-[10px] sm:columns-2 lg:columns-3">
                 {collectionImages.map((image) => (
-                  <figure
-                    key={image._key}
-                    className="overflow-hidden bg-neutral-100"
-                  >
+                  <figure key={image._key} className="mb-[10px] break-inside-avoid">
                     <Image
                       src={urlForImage({
                         _type: 'image',
@@ -188,10 +187,12 @@ function VisualPortfolioInner() {
                         .fit('max')
                         .auto('format')
                         .url()}
-                      alt=""
-                      width={1200}
-                      height={800}
-                      className="h-auto w-full object-contain"
+                      alt={activeMeta?.title ?? ''}
+                      width={image.dimensions?.width ?? 1200}
+                      height={image.dimensions?.height ?? 800}
+                      placeholder={image.lqip ? 'blur' : 'empty'}
+                      blurDataURL={image.lqip ?? undefined}
+                      className="block h-auto w-full"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   </figure>
@@ -209,7 +210,7 @@ export default function VisualPortfolio() {
   return (
     <Suspense
       fallback={
-        <div className="py-8 text-sm text-neutral-600">Loading…</div>
+        <div className="py-8 font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">Loading…</div>
       }
     >
       <VisualPortfolioInner />

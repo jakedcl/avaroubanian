@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Shop is hidden until it has products. Temporary so it can come back.
+      { source: '/shop', destination: '/', permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

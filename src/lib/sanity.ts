@@ -193,7 +193,9 @@ export async function getPhotographyCollection(collectionId: string) {
     description,
     images[] {
       _key,
-      asset
+      asset,
+      "dimensions": asset->metadata.dimensions{width, height, aspectRatio},
+      "lqip": asset->metadata.lqip
     }
   }`,
     { id: collectionId },
@@ -228,7 +230,9 @@ export async function getVisualCollection(collectionId: string) {
     description,
     images[] {
       _key,
-      asset
+      asset,
+      "dimensions": asset->metadata.dimensions{width, height, aspectRatio},
+      "lqip": asset->metadata.lqip
     }
   }`,
     { id: collectionId },
@@ -271,6 +275,16 @@ export async function getAudioCollections() {
     {},
     fetchOptions,
   );
+}
+
+/** Number of audio collections that have at least one track. Used to hide Audio when empty. */
+export async function getAudioCollectionCount(): Promise<number> {
+  const n = await client.fetch<number>(
+    `count(*[_type == "audio" && count(tracks) > 0])`,
+    {},
+    fetchOptions,
+  );
+  return typeof n === 'number' ? n : 0;
 }
 
 // Fetch a specific Audio Collection with its tracks
