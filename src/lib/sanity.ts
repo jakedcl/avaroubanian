@@ -23,11 +23,6 @@ export interface SanityImageSource {
   };
 }
 
-export type SanityImageWithMeta = SanityImageSource & {
-  dimensions?: { width: number; height: number; aspectRatio: number } | null;
-  lqip?: string | null;
-};
-
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'z85vvbbq',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
@@ -133,25 +128,6 @@ export async function getBio() {
     contentPlain: settings.bioContentPlain,
     images: settings.bioImages,
   };
-}
-
-const IMAGE_WITH_META = `{..., "dimensions": asset->metadata.dimensions{width, height, aspectRatio}, "lqip": asset->metadata.lqip}`;
-
-/** Home hero: first Site settings home image, else first image of the first Photography collection. */
-export async function getHomeHeroImage(): Promise<SanityImageWithMeta | null> {
-  const fromSettings = await client.fetch<SanityImageWithMeta | null>(
-    `*[_type == "siteSettings"][0].bioImages[0]${IMAGE_WITH_META}`,
-    {},
-    fetchOptions,
-  );
-  if (fromSettings?.asset?._ref) return fromSettings;
-
-  const fromPhotography = await client.fetch<SanityImageWithMeta | null>(
-    `*[_type == "photography"] | order(order asc, title asc)[0].images[0]${IMAGE_WITH_META}`,
-    {},
-    fetchOptions,
-  );
-  return fromPhotography?.asset?._ref ? fromPhotography : null;
 }
 
 /** All images from photography, artwork (visual), and audio track covers — shuffled once. */

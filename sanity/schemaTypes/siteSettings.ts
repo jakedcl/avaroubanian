@@ -36,8 +36,8 @@ export default defineType({
     }),
     defineField({
       name: 'bioImages',
-      title: 'Home page hero image',
-      description: 'The first image here is shown large at the top of your home page. Leave empty to use the first Photography image.',
+      title: 'Extra home page images',
+      description: 'Optional photos mixed into the home page image strip (in addition to your portfolio images).',
       type: 'array',
       of: [
         {

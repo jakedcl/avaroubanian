@@ -1,89 +1,107 @@
-import LoadedImage from '@/components/LoadedImage';
-import Reveal from '@/components/Reveal';
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
-export type HomeHero = {
-  src: string;
-  width: number;
-  height: number;
-  lqip: string | null;
-  alt: string;
-};
+export type HomeSlide = { src: string; alt: string };
 
 export type CatalogTile = {
   href: string;
   title: string;
-  kind: string;
+  subtitle: string;
   imageSrc: string | null;
-  lqip: string | null;
 };
 
 export default function HomeExplorer({
-  hero,
-  intro,
+  slides,
+  initialSlideIndex,
   catalogTiles,
 }: {
-  hero: HomeHero | null;
-  intro: ReactNode;
+  slides: HomeSlide[];
+  initialSlideIndex: number;
   catalogTiles: CatalogTile[];
 }) {
+  const [slideIndex, setSlideIndex] = useState(
+    slides.length > 0 ? Math.min(initialSlideIndex, slides.length - 1) : 0,
+  );
+
+  useEffect(() => {
+    if (slides.length === 0) return;
+    const id = window.setInterval(() => {
+      setSlideIndex(Math.floor(Math.random() * slides.length));
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [slides.length]);
+
+  const current = slides[slideIndex];
+
   return (
-    <div className="flex flex-col">
-      {hero ? (
-        <Reveal as="section" className="mb-12 md:mb-16" aria-label="Featured work">
-          <Image
-            src={hero.src}
-            alt={hero.alt}
-            width={hero.width}
-            height={hero.height}
-            placeholder={hero.lqip ? 'blur' : 'empty'}
-            blurDataURL={hero.lqip ?? undefined}
-            priority
-            sizes="(max-width: 768px) 100vw, 1100px"
-            className="hero-fade-in block h-auto max-h-[85vh] w-auto max-w-full"
-          />
-        </Reveal>
-      ) : null}
+    <div className="flex flex-col gap-16 md:gap-20">
+      <section>
+        <h2 className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
+          Featured
+        </h2>
+        <div className="img-zoom relative mt-6 aspect-[4/3] w-full max-w-4xl">
+          {current ? (
+            <Image
+              src={current.src}
+              alt={current.alt}
+              fill
+              className="object-contain"
+              sizes="(max-width: 1024px) 100vw, 896px"
+              priority
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-neutral-500">
+              No images yet
+            </div>
+          )}
+        </div>
+      </section>
 
-      {intro}
-
-      {catalogTiles.length > 0 ? (
-        <ul className="grid list-none grid-cols-1 gap-x-8 gap-y-12 p-0 sm:grid-cols-2 md:gap-x-12 md:gap-y-16">
-          {catalogTiles.map((tile, index) => (
-            <li key={tile.href}>
-              <Reveal delay={(index % 2) * 120}>
-                <Link href={tile.href} className="group block no-underline">
-                  <div className="img-zoom relative aspect-[4/5] w-full overflow-hidden">
+      <section>
+        <h2 className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
+          Catalog
+        </h2>
+        {catalogTiles.length === 0 ? (
+          <p className="mt-6 text-sm text-neutral-600">No collections yet.</p>
+        ) : (
+          <ul className="mt-8 grid list-none grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {catalogTiles.map((tile) => (
+              <li key={tile.href}>
+                <Link
+                  href={tile.href}
+                  className="group block no-underline"
+                >
+                  <div className="img-zoom aspect-[4/5] w-full">
                     {tile.imageSrc ? (
-                      <LoadedImage
+                      <Image
                         src={tile.imageSrc}
-                        alt={tile.title}
-                        fill
-                        placeholder={tile.lqip ? 'blur' : 'empty'}
-                        blurDataURL={tile.lqip ?? undefined}
-                        sizes="(max-width: 640px) 100vw, 50vw"
-                        imgClassName="object-cover opacity-[0.92] transition-opacity duration-200 group-hover:opacity-[0.85]"
+                        alt=""
+                        width={640}
+                        height={800}
+                        className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     ) : (
-                      <div className="h-full w-full border border-neutral-200" />
+                      <div className="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-wider text-neutral-400">
+                        No preview
+                      </div>
                     )}
                   </div>
-                  <div className="mt-4 flex items-baseline justify-between gap-4">
-                    <h2 className="font-serif text-[20px] font-medium leading-snug text-neutral-950 md:text-[22px]">
-                      <span className="link-underline">{tile.title}</span>
-                    </h2>
-                    <span className="shrink-0 font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
-                      {tile.kind}
-                    </span>
-                  </div>
+                  <h3 className="mt-4 text-center text-[15px] font-medium leading-snug text-neutral-950 md:text-base">
+                    <span className="link-underline">{tile.title}</span>
+                  </h3>
+                  <p className="mt-1 text-center text-[13px] text-neutral-500">
+                    <span className="link-underline">{tile.subtitle}</span>
+                  </p>
                 </Link>
-              </Reveal>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }
