@@ -39,10 +39,7 @@ export default function HomeExplorer({
   return (
     <div className="flex flex-col gap-16 md:gap-20">
       <section>
-        <h2 className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
-          Featured
-        </h2>
-        <div className="img-zoom relative mt-6 aspect-[4/3] w-full max-w-4xl">
+        <div className="img-zoom relative aspect-[4/3] w-full max-w-4xl">
           {current ? (
             <Image
               src={current.src}
@@ -67,7 +64,7 @@ export default function HomeExplorer({
         {catalogTiles.length === 0 ? (
           <p className="mt-6 text-sm text-neutral-600">No collections yet.</p>
         ) : (
-          <ul className="mt-8 grid list-none grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-8 grid list-none grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-12 lg:grid-cols-3">
             {catalogTiles.map((tile) => (
               <li key={tile.href}>
                 <Link
@@ -82,7 +79,7 @@ export default function HomeExplorer({
                         width={640}
                         height={800}
                         className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 1024px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-wider text-neutral-400">
@@ -90,10 +87,10 @@ export default function HomeExplorer({
                       </div>
                     )}
                   </div>
-                  <h3 className="mt-4 text-center text-[15px] font-medium leading-snug text-neutral-950 md:text-base">
+                  <h3 className="mt-4 text-center text-[14px] font-medium leading-snug text-neutral-950 sm:text-[15px] md:text-base">
                     <span className="link-underline">{tile.title}</span>
                   </h3>
-                  <p className="mt-1 text-center text-[13px] text-neutral-500">
+                  <p className="mt-1 text-center text-[12px] text-neutral-500 sm:text-[13px]">
                     <span className="link-underline">{tile.subtitle}</span>
                   </p>
                 </Link>
