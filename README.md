@@ -9,6 +9,10 @@ A portfolio website for artist Ava Roubanian, showcasing her artwork, photograph
 - **Audio Player**: Listen to music projects directly on the site
 - **Content Management**: Edit content at `/admin` on the live site (Sanity Studio embedded in Next.js)
 
+## Images
+
+Sanity-hosted images use `src/lib/sanityImageLoader.ts` through the `SanityImage` client component (`src/components/SanityImage.tsx`), so resizing happens on Sanity’s CDN instead of Vercel Image Optimization (the team’s shared monthly transformation quota). Use `SanityImage` for any new Sanity image, and always set a `sizes` prop on responsive or `fill` images.
+
 ## Tech Stack
 
 - **Frontend**: Next.js, TypeScript, Tailwind CSS

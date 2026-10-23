@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import SanityImage from '@/components/SanityImage';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { urlForImage } from '@/lib/sanity';
@@ -182,7 +182,7 @@ function AudioLibraryInner() {
                       } ${!url ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
                       {ref ? (
-                        <Image
+                        <SanityImage
                           src={urlForImage({
                             _type: 'image',
                             asset: {
@@ -196,6 +196,7 @@ function AudioLibraryInner() {
                           alt=""
                           width={48}
                           height={48}
+                          sizes="48px"
                           className="h-11 w-11 shrink-0 object-cover"
                         />
                       ) : (

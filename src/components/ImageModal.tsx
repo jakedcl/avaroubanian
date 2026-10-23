@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, type CSSProperties } from 'react';
-import Image from 'next/image';
+import SanityImage from '@/components/SanityImage';
 import { createPortal } from 'react-dom';
 import { urlForImage } from '@/lib/sanity';
 
@@ -272,7 +272,7 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
         
         {/* Image */}
         <div style={imageContainerStyle}>
-          <Image
+          <SanityImage
             src={urlForImage(currentImage)
               .width(1800)
               .url()}
@@ -288,7 +288,6 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
               boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
             }}
             priority
-            unoptimized={false}
             sizes="(max-width: 768px) 95vw, 90vw"
           />
         </div>

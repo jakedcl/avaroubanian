@@ -1,9 +1,9 @@
 'use client';
 
-import Image, { type ImageProps } from 'next/image';
-import { useState } from 'react';
+import SanityImage from '@/components/SanityImage';
+import { useState, type ComponentProps } from 'react';
 
-type LoadedImageProps = ImageProps & {
+type LoadedImageProps = ComponentProps<typeof SanityImage> & {
   imgClassName?: string;
 };
 
@@ -23,7 +23,7 @@ export default function LoadedImage({
 
   return (
     <span className={wrapperClass || undefined}>
-      <Image
+      <SanityImage
         {...props}
         alt={alt}
         fill={fill}

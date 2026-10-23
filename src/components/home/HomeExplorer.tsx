@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import SanityImage from '@/components/SanityImage';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -41,7 +41,7 @@ export default function HomeExplorer({
       <section>
         <div className="img-zoom relative aspect-[4/3] w-full max-w-4xl">
           {current ? (
-            <Image
+            <SanityImage
               src={current.src}
               alt={current.alt}
               fill
@@ -73,7 +73,7 @@ export default function HomeExplorer({
                 >
                   <div className="img-zoom aspect-[4/5] w-full">
                     {tile.imageSrc ? (
-                      <Image
+                      <SanityImage
                         src={tile.imageSrc}
                         alt=""
                         width={640}
