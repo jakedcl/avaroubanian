@@ -60,6 +60,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${newsreader.variable} ${inter.variable}`}>
       <body className={`${newsreader.className} min-h-screen bg-white text-neutral-950`}>
+        <noscript>
+          <style>{`.reveal{opacity:1;transform:none}`}</style>
+        </noscript>
         {children}
       </body>
     </html>

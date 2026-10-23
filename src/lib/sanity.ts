@@ -176,7 +176,7 @@ export async function getPhotographyCollections() {
     description,
     order,
     "imageCount": count(images),
-    "previewImage": images[0]
+    "previewImage": images[0]{..., "lqip": asset->metadata.lqip}
   }`,
     {},
     fetchOptions,
@@ -213,7 +213,7 @@ export async function getVisualCollections() {
     description,
     order,
     "imageCount": count(images),
-    "previewImage": images[0]
+    "previewImage": images[0]{..., "lqip": asset->metadata.lqip}
   }`,
     {},
     fetchOptions,
@@ -270,7 +270,7 @@ export async function getAudioCollections() {
     description,
     order,
     "mediaCount": count(tracks),
-    "previewImage": tracks[0].coverImage
+    "previewImage": tracks[0].coverImage{..., "lqip": asset->metadata.lqip}
   }`,
     {},
     fetchOptions,

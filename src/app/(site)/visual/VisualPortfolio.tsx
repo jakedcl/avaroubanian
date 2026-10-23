@@ -1,9 +1,11 @@
 'use client';
 
-import Image from 'next/image';
+import Lightbox, { type LightboxImage } from '@/components/Lightbox';
+import LoadedImage from '@/components/LoadedImage';
+import Reveal from '@/components/Reveal';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { urlForImage } from '@/lib/sanity';
 
 type Kind = 'photography' | 'visual';
@@ -46,6 +48,8 @@ function VisualPortfolioInner() {
   const [collectionImages, setCollectionImages] = useState<CollectionImage[]>([]);
   const [loadingCollections, setLoadingCollections] = useState(true);
   const [loadingImages, setLoadingImages] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +112,7 @@ function VisualPortfolioInner() {
 
   useEffect(() => {
     if (!activeCollection) return;
+    setLightboxIndex(null);
     let cancelled = false;
     (async () => {
       setLoadingImages(true);
@@ -128,6 +133,25 @@ function VisualPortfolioInner() {
   }, [activeKind, activeCollection]);
 
   const activeMeta = merged.find((c) => c._id === activeCollection);
+  const activeTitle = activeMeta?.title ?? '';
+
+  const lightboxImages: LightboxImage[] = useMemo(
+    () =>
+      collectionImages.map((img) => ({
+        key: img._key,
+        src: urlForImage({ _type: 'image', asset: img.asset })
+          .width(2400)
+          .fit('max')
+          .auto('format')
+          .quality(90)
+          .url(),
+        width: img.dimensions?.width ?? 1600,
+        height: img.dimensions?.height ?? 1200,
+        lqip: img.lqip ?? null,
+        alt: activeTitle,
+      })),
+    [collectionImages, activeTitle],
+  );
 
   return (
     <div className="pb-12">
@@ -176,32 +200,48 @@ function VisualPortfolioInner() {
               <p className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">Loading images…</p>
             ) : (
               <div className="columns-1 gap-[10px] sm:columns-2 lg:columns-3">
-                {collectionImages.map((image) => (
-                  <figure key={image._key} className="mb-[10px] break-inside-avoid">
-                    <Image
-                      src={urlForImage({
-                        _type: 'image',
-                        asset: image.asset,
-                      })
-                        .width(1600)
-                        .fit('max')
-                        .auto('format')
-                        .url()}
-                      alt={activeMeta?.title ?? ''}
-                      width={image.dimensions?.width ?? 1200}
-                      height={image.dimensions?.height ?? 800}
-                      placeholder={image.lqip ? 'blur' : 'empty'}
-                      blurDataURL={image.lqip ?? undefined}
-                      className="block h-auto w-full"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  </figure>
+                {collectionImages.map((image, i) => (
+                  <Reveal key={image._key} delay={Math.min((i % 3) * 80, 240)} className="mb-[10px] break-inside-avoid">
+                    <figure>
+                      <button
+                        type="button"
+                        onClick={() => setLightboxIndex(i)}
+                        aria-label={`Open image ${i + 1} of ${collectionImages.length}`}
+                        className="img-zoom block w-full cursor-zoom-in focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-neutral-950"
+                      >
+                        <LoadedImage
+                          src={urlForImage({
+                            _type: 'image',
+                            asset: image.asset,
+                          })
+                            .width(1600)
+                            .fit('max')
+                            .auto('format')
+                            .url()}
+                          alt={activeMeta?.title ?? ''}
+                          width={image.dimensions?.width ?? 1200}
+                          height={image.dimensions?.height ?? 800}
+                          placeholder={image.lqip ? 'blur' : 'empty'}
+                          blurDataURL={image.lqip ?? undefined}
+                          imgClassName="block h-auto w-full opacity-[0.92] transition-opacity duration-200 hover:opacity-[0.85]"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </button>
+                    </figure>
+                  </Reveal>
                 ))}
               </div>
             )}
           </div>
         </>
       )}
+      <Lightbox
+        images={lightboxImages}
+        index={lightboxIndex}
+        caption={activeTitle}
+        onClose={closeLightbox}
+        onIndexChange={setLightboxIndex}
+      />
     </div>
   );
 }

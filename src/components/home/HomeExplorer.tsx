@@ -42,7 +42,7 @@ export default function HomeExplorer({
         <h2 className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-500">
           Featured
         </h2>
-        <div className="relative mt-6 aspect-[4/3] w-full max-w-4xl">
+        <div className="img-zoom relative mt-6 aspect-[4/3] w-full max-w-4xl">
           {current ? (
             <Image
               src={current.src}
@@ -74,7 +74,7 @@ export default function HomeExplorer({
                   href={tile.href}
                   className="group block no-underline"
                 >
-                  <div className="aspect-[4/5] w-full">
+                  <div className="img-zoom aspect-[4/5] w-full">
                     {tile.imageSrc ? (
                       <Image
                         src={tile.imageSrc}
@@ -91,10 +91,10 @@ export default function HomeExplorer({
                     )}
                   </div>
                   <h3 className="mt-4 text-center text-[15px] font-medium leading-snug text-neutral-950 md:text-base">
-                    {tile.title}
+                    <span className="link-underline">{tile.title}</span>
                   </h3>
                   <p className="mt-1 text-center text-[13px] text-neutral-500">
-                    {tile.subtitle}
+                    <span className="link-underline">{tile.subtitle}</span>
                   </p>
                 </Link>
               </li>
