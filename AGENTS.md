@@ -2,6 +2,10 @@
 
 Portfolio site for artist Ava Roubanian: visual work (artwork, photography), audio, a shop page, and a bio.
 
+## Dev framework
+
+This repo follows Jake's dev framework: [jakedcl/dev-framework](https://github.com/jakedcl/dev-framework) (start at its `AGENTS.md`). The framework is the source of truth; if anything in this file conflicts with it, the framework wins.
+
 ## Stack
 - Next.js 15.2 (App Router), React 19, TypeScript, Tailwind CSS 4, Framer Motion 12.
 - Sanity project `z85vvbbq`, dataset `production`, read via next-sanity 9 (`src/lib/sanity.ts`).
