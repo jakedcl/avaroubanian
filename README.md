@@ -1,52 +1,31 @@
-# Ava Roubanian Portfolio
+# Ava Roubanian
 
-A portfolio website for artist Ava Roubanian, showcasing her artwork, photography, and music projects.
+Portfolio site for artist Ava Roubanian: artwork, photography and music.
 
-## Features
+Live at [avaroubanian.com](https://avaroubanian.com).
 
-- **Responsive Design**: Works on mobile, tablet, and desktop
-- **Visual Gallery**: Display artwork and photography with filtering options
-- **Audio Player**: Listen to music projects directly on the site
-- **Content Management**: Edit content at `/admin` on the live site (Sanity Studio embedded in Next.js)
+## What's on it
 
-## Images
+- `/visual` is the artwork and photography gallery.
+- `/audio` is the music library, with a player on the page.
+- `/admin` is Sanity Studio, embedded in the site. Ava edits everything there.
 
-Sanity-hosted images use `src/lib/sanityImageLoader.ts` through the `SanityImage` client component (`src/components/SanityImage.tsx`), so resizing happens on Sanity’s CDN instead of Vercel Image Optimization (the team’s shared monthly transformation quota). Use `SanityImage` for any new Sanity image, and always set a `sizes` prop on responsive or `fill` images.
+## Stack
 
-## Tech Stack
+Next.js, TypeScript, Tailwind CSS, Sanity, deployed on Vercel.
 
-- **Frontend**: Next.js, TypeScript, Tailwind CSS
-- **CMS**: Sanity.io
-- **Hosting**: Vercel
+## Running it locally
 
-## Development
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-### Setup
-
-1. Clone the repository
-2. Install dependencies:
+You need Node.js 20.9 or newer.
 
 ```bash
 npm install
-```
-
-3. Start the development server:
-
-```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-5. Edit content at [http://localhost:3000/admin](http://localhost:3000/admin) (Sanity login required)
+Open http://localhost:3000. The Studio is at http://localhost:3000/admin (Sanity login required). The Sanity project id, dataset and API version are set in `vercel.json`.
 
-### Optional: standalone Sanity dev server
-
-Schema types live in `sanity/schemaTypes/`. The shared config is `sanity.config.ts` at the repo root. To run the Studio UI on port 3333:
+To run the Studio on its own (port 3333):
 
 ```bash
 cd sanity
@@ -54,42 +33,29 @@ npm install
 npm run dev
 ```
 
-## Deployment
+Schema types live in `sanity/schemaTypes/`. The shared config is `sanity.config.ts` at the repo root.
 
-### Frontend (Next.js)
+## Images
 
-Deploy through Vercel (connect the Git repository). Set environment variables:
+Sanity images go through `src/lib/sanityImageLoader.ts` via the `SanityImage` component (`src/components/SanityImage.tsx`), so resizing happens on Sanity's CDN instead of Vercel Image Optimization (the team's shared monthly quota). Use `SanityImage` for any new Sanity image, and always set `sizes` on responsive or `fill` images.
+
+## Deploy
+
+Deployed on Vercel from this repo. Env vars:
 
 | Variable | Purpose |
 | --- | --- |
-| `NEXT_PUBLIC_SANITY_*` | Already in `vercel.json` for project/dataset/API version |
-| `SANITY_REVALIDATE_SECRET` | Secret for Sanity → `POST /api/revalidate` webhook (generate a long random string) |
-| `NEXT_PUBLIC_SITE_URL` | Optional canonical site URL for metadata |
+| `NEXT_PUBLIC_SANITY_*` | Already in `vercel.json` |
+| `SANITY_REVALIDATE_SECRET` | Shared secret for the Sanity webhook that calls `POST /api/revalidate` |
+| `NEXT_PUBLIC_SITE_URL` | Optional canonical URL for metadata |
 
-### Sanity
+In Sanity (project settings > API):
 
-1. Deploy schema changes when types change (Sanity CLI or dashboard).
-2. In [Sanity project settings → API → CORS origins](https://www.sanity.io/manage), allow:
-   - `http://localhost:3000` (development)
-   - Your production site URL (e.g. `https://yourdomain.com`)
-3. In [Sanity project settings → API → Webhooks](https://www.sanity.io/manage), create a webhook:
-   - **URL**: `https://yourdomain.com/api/revalidate`
-   - **Dataset**: production
-   - **Trigger on**: Create, Update, Delete
-   - **Secret**: same value as `SANITY_REVALIDATE_SECRET`
-   - **HTTP method**: POST
-   - **Projection**: `{ _type }` (optional)
+- CORS origins: `http://localhost:3000` and `https://avaroubanian.com`
+- Webhook: `https://avaroubanian.com/api/revalidate`, dataset `production`, on create/update/delete, POST, with the same secret as `SANITY_REVALIDATE_SECRET`
 
-## Content Management
-
-After deployment, Ava can manage content at **`/admin`** on the website:
-
-1. Log in with her Sanity account
-2. Use **Site settings** for contact email, Instagram, and home page intro
-3. Use **Photography**, **Artwork**, and **Audio** for portfolio collections
-
-Changes appear on the site within seconds via the revalidation webhook (no redeploy needed).
+Published changes show up on the site within seconds, no redeploy needed.
 
 ## License
 
-This project is private and not licensed for public use.
+All rights reserved. The code is public to view, not licensed for reuse.

@@ -7,8 +7,8 @@ Portfolio site for artist Ava Roubanian: visual work (artwork, photography), aud
 This repo follows Jake's dev framework: [jakedcl/dev-framework](https://github.com/jakedcl/dev-framework) (start at its `AGENTS.md`). The framework is the source of truth; if anything in this file conflicts with it, the framework wins.
 
 ## Stack
-- Next.js 15.2 (App Router), React 19, TypeScript, Tailwind CSS 4, Framer Motion 12.
-- Sanity project `z85vvbbq`, dataset `production`, read via next-sanity 9 (`src/lib/sanity.ts`).
+- Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4.
+- Sanity project `z85vvbbq`, dataset `production`, read via next-sanity 13 (`src/lib/sanity.ts`).
 - Embedded Sanity Studio at `/admin` (`sanity.config.ts` at repo root). Legacy `sanity/` folder holds schema types and optional local `npm run dev` against the shared config.
 - Vercel. `vercel.json` sets the public Sanity env vars (API version 2023-05-03).
 
@@ -24,7 +24,7 @@ This repo follows Jake's dev framework: [jakedcl/dev-framework](https://github.c
 - Optional schema dev UI: `cd sanity && npm install && npm run dev` (uses root `sanity.config.ts`).
 
 ## Gotchas
-- Two separate installs (root and `sanity/`) with different React majors. Install and run them separately.
+- Two separate installs: the root uses Sanity 6 and React 19, `sanity/` still has Sanity 3 and React 18. Install and run them separately.
 - Site settings singleton (`siteSettings` document id) drives contact email, Instagram URL, and home bio. Code fallbacks live in `src/lib/site-defaults.ts`.
 - Content cache tag `sanity`; webhook `POST /api/revalidate` with `SANITY_REVALIDATE_SECRET`.
 - Images come from `cdn.sanity.io` (allowed in `next.config.ts`).
