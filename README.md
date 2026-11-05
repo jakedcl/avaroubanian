@@ -8,7 +8,7 @@ Live at [avaroubanian.com](https://avaroubanian.com).
 
 - `/visual` is the artwork and photography gallery.
 - `/audio` is the music library, with a player on the page.
-- `/admin` is Sanity Studio, embedded in the site. Ava edits everything there.
+- `/studio` is Sanity Studio, embedded in the site (`/admin` redirects there). Ava edits everything there.
 
 ## Stack
 
@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. The Studio is at http://localhost:3000/admin (Sanity login required). The Sanity project id, dataset and API version are set in `vercel.json`.
+Open http://localhost:3000. The Studio is at http://localhost:3000/studio (Sanity login required; `/admin` redirects there). The Sanity project id, dataset and API version are set in `vercel.json`.
 
 To run the Studio on its own (port 3333):
 

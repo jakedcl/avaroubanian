@@ -12,7 +12,7 @@ const singletonTypes = new Set(['siteSettings']);
 export default defineConfig({
   name: 'default',
   title: 'Ava Roubanian',
-  basePath: '/admin',
+  basePath: '/studio',
   projectId,
   dataset,
   plugins: [
