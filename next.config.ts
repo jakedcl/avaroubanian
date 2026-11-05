@@ -13,8 +13,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: '/studio', destination: '/admin', permanent: false },
-      { source: '/studio/:path*', destination: '/admin/:path*', permanent: false },
+      { source: '/admin', destination: '/studio', permanent: false },
+      { source: '/admin/:path*', destination: '/studio/:path*', permanent: false },
       // Shop is hidden until it has products. Temporary so it can come back.
       { source: '/shop', destination: '/', permanent: false },
     ];
