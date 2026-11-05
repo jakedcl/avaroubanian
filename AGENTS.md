@@ -11,12 +11,12 @@ The framework repo is private. Cloud agents open it with `git clone --depth 1 ht
 ## Stack
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4.
 - Sanity project `z85vvbbq`, dataset `production`, read via next-sanity 13 (`src/lib/sanity.ts`).
-- Embedded Sanity Studio at `/admin` (`sanity.config.ts` at repo root). Legacy `sanity/` folder holds schema types and optional local `npm run dev` against the shared config.
+- Embedded Sanity Studio at `/studio` (`/admin` redirects) (`sanity.config.ts` at repo root). Legacy `sanity/` folder holds schema types and optional local `npm run dev` against the shared config.
 - Vercel. `vercel.json` sets the public Sanity env vars (API version 2023-05-03).
 
 ## Layout
 - `src/app/(site)/` home, `visual/`, `audio/`, `shop/`, and `api/visual`, `api/audio` (Sanity reads).
-- `src/app/admin/` embedded Studio (no site shell).
+- `src/app/studio/` embedded Studio (no site shell); `/admin` redirects to `/studio`.
 - `src/components/` content sections, `FilmStrip.tsx` + `FilmStrip.module.css`, `ImageModal`, `ContactPanel`, `SiteShell`, `home/`.
 - `sanity/schemaTypes/` site settings, artwork, photography, audio, legacy bio.
 - `FILMSTRIP_PORTING_GUIDE.md` documents the film strip ported from the christianmauldin repo.
