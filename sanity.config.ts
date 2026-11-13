@@ -15,6 +15,7 @@ export default defineConfig({
   basePath: '/studio',
   projectId,
   dataset,
+  releases: { enabled: false },
   plugins: [
     structureTool({ structure }),
     ...(process.env.NODE_ENV === 'development' ? [visionTool()] : []),
