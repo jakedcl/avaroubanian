@@ -16,6 +16,8 @@ export default defineConfig({
   projectId,
   dataset,
   releases: { enabled: false },
+  scheduledDrafts: { enabled: false },
+  tasks: { enabled: false },
   plugins: [
     structureTool({ structure }),
     ...(process.env.NODE_ENV === 'development' ? [visionTool()] : []),
