@@ -193,7 +193,7 @@ function AudioLibraryInner() {
                             .width(48)
                             .height(48)
                             .url()}
-                          alt=""
+                          alt={t.title}
                           width={48}
                           height={48}
                           sizes="48px"

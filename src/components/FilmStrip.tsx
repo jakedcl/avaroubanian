@@ -70,7 +70,7 @@ export default function FilmStrip({ images }: FilmStripProps) {
           <div className={styles.frameWindow} aria-hidden>
             <SanityImage
               src={url}
-              alt=""
+              alt="Portfolio photograph"
               width={300}
               height={225}
               sizes={`${frameWidth}px`}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import SanityImage from '@/components/SanityImage';
 import { urlForImage } from '@/lib/sanity';
+import { resolveImageAlt } from '@/lib/image-alt';
 import ImageModal from './ImageModal';
 
 interface Collection {
@@ -17,6 +18,7 @@ interface Collection {
 interface CollectionImage {
   _key: string;
   _type: string;
+  alt?: string;
   asset: {
     _ref: string;
     _type: string;
@@ -116,6 +118,14 @@ export default function PhotographyContent() {
   const closeImageModal = () => {
     setIsModalOpen(false);
   };
+
+  const activeCollectionMeta = collections.find(
+    (collection) => collection._id === activeCollection,
+  );
+  const imageAltFallback =
+    activeCollectionMeta?.description?.trim() ||
+    activeCollectionMeta?.title ||
+    'Photography';
   
   return (
     <>
@@ -189,7 +199,7 @@ export default function PhotographyContent() {
                       // Keep original dimensions but set a maximum width for performance
                       .width(1200)
                       .url()}
-                    alt=""
+                    alt={resolveImageAlt(image.alt, imageAltFallback)}
                     width={1200}
                     height={0}
                     priority={index === 0} // Load first image with priority
@@ -222,6 +232,7 @@ export default function PhotographyContent() {
         initialIndex={activeImageIndex}
         isOpen={isModalOpen}
         onClose={closeImageModal}
+        imageAltFallback={imageAltFallback}
       />
     </>
   );

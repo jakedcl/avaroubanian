@@ -195,6 +195,7 @@ export async function getPhotographyCollection(collectionId: string) {
     images[] {
       _key,
       asset,
+      alt,
       "dimensions": asset->metadata.dimensions{width, height, aspectRatio},
       "lqip": asset->metadata.lqip
     }

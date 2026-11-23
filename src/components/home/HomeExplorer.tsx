@@ -75,7 +75,7 @@ export default function HomeExplorer({
                     {tile.imageSrc ? (
                       <SanityImage
                         src={tile.imageSrc}
-                        alt=""
+                        alt={tile.title}
                         width={640}
                         height={800}
                         className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"

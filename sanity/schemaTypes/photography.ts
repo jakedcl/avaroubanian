@@ -44,8 +44,17 @@ export default defineType({
           type: 'image',
           options: {
             hotspot: true,
-          }
-        }
+          },
+          fields: [
+            defineField({
+              name: 'alt',
+              title: 'Alternative text',
+              description: 'Describe the photo for screen readers and search engines.',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+        },
       ],
       options: {
         layout: 'grid',

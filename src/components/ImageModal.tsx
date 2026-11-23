@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback, type CSSProperties } from 'react';
 import SanityImage from '@/components/SanityImage';
 import { createPortal } from 'react-dom';
 import { urlForImage } from '@/lib/sanity';
+import { resolveImageAlt } from '@/lib/image-alt';
 
 interface SanityImage {
   _key: string;
   _type: string;
+  alt?: string;
   asset: {
     _ref: string;
     _type: string;
@@ -19,9 +21,16 @@ interface ImageModalProps {
   initialIndex: number;
   isOpen: boolean;
   onClose: () => void;
+  imageAltFallback?: string;
 }
 
-export default function ImageModal({ images, initialIndex, isOpen, onClose }: ImageModalProps) {
+export default function ImageModal({
+  images,
+  initialIndex,
+  isOpen,
+  onClose,
+  imageAltFallback = 'Image',
+}: ImageModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [mounted, setMounted] = useState(false);
   
@@ -276,7 +285,7 @@ export default function ImageModal({ images, initialIndex, isOpen, onClose }: Im
             src={urlForImage(currentImage)
               .width(1800)
               .url()}
-            alt=""
+            alt={resolveImageAlt(currentImage.alt, imageAltFallback)}
             width={1800}
             height={1200}
             style={{
