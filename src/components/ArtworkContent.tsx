@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import SanityImage from '@/components/SanityImage';
 import { urlForImage } from '@/lib/sanity';
+import { resolveImageAlt } from '@/lib/image-alt';
 import ImageModal from './ImageModal';
 
 interface Collection {
@@ -124,6 +125,14 @@ export default function ArtworkContent() {
     setIsModalOpen(false);
   };
 
+  const activeCollectionMeta = collections.find(
+    (collection) => collection._id === activeCollection,
+  );
+  const imageAltFallback =
+    activeCollectionMeta?.description?.trim() ||
+    activeCollectionMeta?.title ||
+    'Artwork';
+  
   return (
     <>
       {/* Collection Side Tabs */}
@@ -195,7 +204,7 @@ export default function ArtworkContent() {
                       // Keep original dimensions but set a maximum width for performance
                       .width(1200)
                       .url()}
-                    alt=""
+                    alt={resolveImageAlt(undefined, imageAltFallback)}
                     width={1200}
                     height={0}
                     priority={index === 0} // Load first image with priority
@@ -228,6 +237,7 @@ export default function ArtworkContent() {
         initialIndex={activeImageIndex}
         isOpen={isModalOpen}
         onClose={closeImageModal}
+        imageAltFallback={imageAltFallback}
       />
     </>
   );

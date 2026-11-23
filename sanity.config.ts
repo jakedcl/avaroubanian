@@ -3,9 +3,10 @@ import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
 import { schemaTypes } from './sanity/schemaTypes';
 import { structure } from './sanity/structure';
+import { sanityDataset, sanityProjectId } from './src/lib/sanity-env';
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'z85vvbbq';
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+const projectId = sanityProjectId;
+const dataset = sanityDataset;
 
 const singletonTypes = new Set(['siteSettings']);
 
@@ -18,6 +19,7 @@ export default defineConfig({
   releases: { enabled: false },
   scheduledDrafts: { enabled: false },
   tasks: { enabled: false },
+  announcements: { enabled: false },
   plugins: [
     structureTool({ structure }),
     ...(process.env.NODE_ENV === 'development' ? [visionTool()] : []),
