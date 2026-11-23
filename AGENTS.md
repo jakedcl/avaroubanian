@@ -5,8 +5,8 @@ Portfolio site for artist Ava Roubanian: visual work (artwork, photography), aud
 ## Stack
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4.
 - Sanity project `z85vvbbq`, dataset `production`, read via next-sanity 13 (`src/lib/sanity.ts`).
-- Embedded Sanity Studio at `/studio` (`/admin` redirects) (`sanity.config.ts` at repo root). Legacy `sanity/` folder holds schema types and optional local `npm run dev` against the shared config.
-- Vercel. `vercel.json` sets the public Sanity env vars (API version 2023-05-03).
+- Embedded Sanity Studio at `/studio` (`/admin` redirects) (`sanity.config.ts` at repo root). `sanity/` holds schema types and Studio structure helpers only.
+- Vercel. `vercel.json` sets the public Sanity env vars.
 
 ## Layout
 - `src/app/(site)/` home, `visual/`, `audio/`, `shop/`, and `api/visual`, `api/audio` (Sanity reads).
@@ -17,10 +17,8 @@ Portfolio site for artist Ava Roubanian: visual work (artwork, photography), aud
 
 ## Commands
 - Site: `npm run dev`, `npm run build`, `npm run lint`.
-- Optional schema dev UI: `cd sanity && npm install && npm run dev` (uses root `sanity.config.ts`).
 
 ## Gotchas
-- Two separate installs: the root uses Sanity 6 and React 19, `sanity/` still has Sanity 3 and React 18. Install and run them separately.
 - Site settings singleton (`siteSettings` document id) drives contact email, Instagram URL, and home bio. Code fallbacks live in `src/lib/site-defaults.ts`.
 - Content cache tag `sanity`; webhook `POST /api/revalidate` with `SANITY_REVALIDATE_SECRET`.
 - Images come from `cdn.sanity.io` (allowed in `next.config.ts`).
