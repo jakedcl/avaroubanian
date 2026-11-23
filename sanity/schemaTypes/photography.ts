@@ -49,9 +49,13 @@ export default defineType({
             defineField({
               name: 'alt',
               title: 'Alternative text',
-              description: 'Describe the photo for screen readers and search engines.',
+              description:
+                'Optional. Describe the photo for screen readers and search engines. If left empty, the site uses the collection title.',
               type: 'string',
-              validation: (Rule) => Rule.required(),
+              validation: (Rule) =>
+                Rule.warning().custom((value) =>
+                  value?.trim() ? true : 'Adding a short description helps accessibility and SEO (optional).',
+                ),
             }),
           ],
         },
