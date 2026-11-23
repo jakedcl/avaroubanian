@@ -50,7 +50,7 @@ export default defineType({
               name: 'alt',
               title: 'Alternative text',
               description:
-                'Optional. Describe the photo for screen readers and search engines. If left empty, the site uses the collection's description or title.',
+                'Optional. Describe the photo for screen readers and search engines. If left empty, the site uses the collection description or title.',
               type: 'string',
               validation: (Rule) =>
                 Rule.warning().custom((value) =>
