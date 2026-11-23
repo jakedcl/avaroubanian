@@ -1,6 +1,7 @@
 import { createClient } from 'next-sanity';
 import { createImageUrlBuilder } from '@sanity/image-url';
 import { SITE_DEFAULTS } from '@/lib/site-defaults';
+import { sanityApiVersion, sanityDataset, sanityProjectId } from '@/lib/sanity-env';
 
 // Define a type for Sanity image reference
 export interface SanityImageSource {
@@ -24,9 +25,9 @@ export interface SanityImageSource {
 }
 
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'z85vvbbq',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05-03',
+  projectId: sanityProjectId,
+  dataset: sanityDataset,
+  apiVersion: sanityApiVersion,
   useCdn: true,
 });
 
